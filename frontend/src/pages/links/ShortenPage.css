@@ -1,0 +1,290 @@
+/*
+ * File: ShortenPage.css
+ * Description: File: ShortenPage. Part of the frontend application.
+ */
+
+/* ================= MAIN LAYOUT ================= */
+
+.shorten-main {
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-xl);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ================= CARD ================= */
+
+.shorten-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 3rem 4rem;
+  box-shadow: 0 16px 48px rgba(255, 83, 126, 0.08);
+  border: 1px solid rgba(255, 83, 126, 0.08);
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+  animation: fadeUp 0.4s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= TEXT ================= */
+
+.shorten-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+  letter-spacing: -1px;
+}
+
+.shorten-subtitle {
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xl);
+}
+
+/* ================= FORM ================= */
+
+.shorten-form {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.url-input {
+  flex: 1;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.url-input:focus {
+  border-color: #ff537e;
+  box-shadow: 0 0 0 3px rgba(255, 83, 126, 0.15);
+}
+
+.shorten-btn {
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+}
+
+.shorten-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ================= RESULT ================= */
+
+.result-container {
+  background-color: var(--color-bg);
+  border: 1px solid rgba(255, 83, 126, 0.1);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-badge {
+  color: #10B981;
+  background-color: #D1FAE5;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-sm);
+}
+
+.result-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-md);
+}
+
+.result-box {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+  width: 100%;
+}
+
+.result-url {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+  color: #ff537e;
+  font-size: 1.1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ================= COPY BUTTON (FINAL CLEAN) ================= */
+
+.copy-btn {
+  background: linear-gradient(90deg, #ff537e, #ffaac8);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* hover */
+.copy-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 83, 126, 0.3);
+}
+
+/* click feel */
+.copy-btn:active {
+  transform: scale(0.95);
+}
+
+/* copied state */
+.copy-btn.copied {
+  background: #ff537e;
+  box-shadow: 0 4px 12px rgba(255, 83, 126, 0.3);
+}
+
+/* ================= AUTH ================= */
+
+.auth-prompt {
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+.auth-prompt p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-md);
+  font-size: 0.95rem;
+}
+
+.auth-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+}
+
+.action-btn {
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--radius-md);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 600px) {
+  .shorten-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .shorten-title {
+    font-size: 2rem;
+  }
+
+  .shorten-form {
+    flex-direction: column;
+  }
+
+  .shorten-btn {
+    width: 100%;
+  }
+
+  .result-box {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .result-url {
+    text-align: center;
+    width: 100%;
+  }
+
+  .copy-btn {
+    width: 100%;
+  }
+}
+/* ===== MODAL ===== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  animation: fadeUp 0.3s ease;
+}
+
+.modal-success {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.modal-url-box {
+  margin-top: 1rem;
+  display: flex;
+  gap: 10px;
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 10px;
+  align-items: center;
+}
+
+.modal-url-box span {
+  flex: 1;
+  font-size: 0.9rem;
+  overflow: hidden;
+}

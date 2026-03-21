@@ -1,0 +1,48 @@
+/*
+ * File: Button.css
+ * Description: Reusable UI component: Button. Provides generic UI functionality across the app.
+ */
+
+.btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* PRIMARY */
+.btn-primary {
+  background: #ff537e;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #e0486d;
+}
+
+/* SECONDARY */
+.btn-secondary {
+  background: #e0e0e0;
+}
+
+.btn-secondary:hover {
+  background: #d5d5d5;
+}
+
+/* DANGER */
+.btn-danger {
+  background: #e53935;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #c62828;
+}
+
+/* DISABLED */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

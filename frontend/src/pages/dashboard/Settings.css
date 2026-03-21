@@ -1,0 +1,49 @@
+/*
+ * File: Settings.css
+ * Description: Dashboard page: Settings. Standard user dashboard view for managing links and viewing analytics.
+ */
+
+.settings-container {
+  padding: 30px;
+}
+
+.settings-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.settings-card {
+  max-width: 500px;
+  background: var(--color-surface);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(255, 91, 121, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-group label {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.settings-group input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  outline: none;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}

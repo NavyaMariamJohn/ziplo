@@ -1,0 +1,66 @@
+/*
+ * File: responsive.css
+ * Description: File: responsive. Part of the frontend application.
+ */
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  
+  /* Typography */
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-title {
+    font-size: 2.8rem;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  /* Layout */
+  .stats-container {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+  }
+  
+  .stat-card {
+    max-width: 100%;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-top: var(--space-md);
+  }
+  
+  .nav-links {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .hero-section {
+    padding-top: var(--space-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .hero-actions .btn {
+    width: 100%;
+  }
+}

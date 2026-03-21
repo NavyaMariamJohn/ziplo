@@ -1,0 +1,62 @@
+/*
+ * File: Footer.css
+ * Description: Global layout wrapper: Footer. Defines the overall layout structure for specific sections (like Dashboard or full app).
+ */
+
+.footer-section {
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-xl);
+  border-top: 1px solid var(--color-border);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.footer-brand .footer-desc {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  max-width: 250px;
+}
+
+.footer-links-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.footer-links-col h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+}
+
+.footer-links-col a, .footer-links-col p {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  transition: color 0.15s;
+}
+
+.footer-links-col a:hover {
+  color: var(--color-primary);
+}
+
+.footer-credits {
+  margin-top: var(--space-lg);
+  line-height: 1.5;
+}

@@ -1,0 +1,130 @@
+/*
+ * File: AdminDashboard.css
+ * Description: Admin page: AdminDashboard. Accessible only to administrators for managing the platform.
+ */
+
+.admin-badge {
+  background-color: #2E3A59;
+  color: white;
+  padding: 0.35rem 1rem;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-lg);
+}
+
+.admin-panel-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(255, 91, 121, 0.04);
+  border: 1px solid rgba(255, 91, 121, 0.03);
+}
+
+.admin-table th {
+  padding: 1rem 1.5rem !important;
+}
+
+.admin-table td {
+  padding: 1rem 1.5rem !important;
+}
+
+.role-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.role-badge.user {
+  background-color: #F3F4F6;
+  color: #4B5563;
+}
+
+.role-badge.pro-user {
+  background-color: #EDE9FE;
+  color: #7C3AED;
+}
+
+.role-badge.admin {
+  background-color: #FEF3C7;
+  color: #D97706;
+}
+
+.status-badge.suspended {
+  background-color: #FEF2F2;
+  color: #EF4444;
+}
+
+/* Activity Feed */
+.activity-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.activity-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.activity-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-icon-wrapper.info {
+  background-color: #EFF6FF;
+  color: #3B82F6;
+}
+
+.activity-icon-wrapper.warning {
+  background-color: #FFFBEB;
+  color: #F59E0B;
+}
+
+.activity-icon-wrapper.success {
+  background-color: #ECFDF5;
+  color: #10B981;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-event {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.activity-user {
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.activity-time {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1024px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,83 @@
+/*
+ * File: HowItWorksSection.css
+ * Description: Landing page component for how it works section. Part of the public-facing website.
+ */
+
+.how-it-works-section {
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-xl);
+}
+
+.how-it-works-header {
+  margin-bottom: var(--space-xl);
+}
+
+.how-it-works-header h2 {
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+  letter-spacing: -0.5px;
+}
+
+.how-it-works-header p {
+  color: var(--color-text-muted);
+  font-size: 1.125rem;
+}
+
+.steps-container {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .steps-container {
+    flex-direction: column;
+  }
+}
+
+.step-card {
+  flex: 1;
+  background: var(--color-surface);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--space-sm);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.step-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+}
+
+.step-desc {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}

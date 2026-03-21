@@ -1,0 +1,176 @@
+/*
+ * File: Sidebar.css
+ * Description: Dashboard component for sidebar. Used within the user or admin dashboard.
+ */
+
+.sidebar {
+  width: 250px;
+  background-color: var(--color-surface); /* Pure white background like image */
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  padding: 0;
+  z-index: 100;
+  border-right: 1px solid var(--color-border);
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .link-text {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-item {
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.sidebar.collapsed .nav-icon {
+  margin-left: 0;
+}
+
+.sidebar.collapsed .sidebar-logo {
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 2rem 2rem 3rem 2rem;
+}
+
+.sidebar-logo .logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.5px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 1rem 1.5rem 1rem 0; /* Removing left padding so indicator is flush */
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.nav-indicator {
+  width: 3px;
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 0 4px 4px 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* Matching specific design requested: active items have a left active bar and slightly tinted background */
+.sidebar-item:hover,
+.sidebar-item.active {
+  color: var(--color-text);
+  background: linear-gradient(90deg, rgba(255,91,121,0.05) 0%, rgba(255,255,255,0) 100%);
+}
+
+.sidebar-item.active .nav-indicator {
+  opacity: 1; /* Show indicator only on active */
+}
+
+.sidebar-item.active {
+  font-weight: 600;
+}
+
+.nav-icon {
+  color: inherit;
+  margin-left: 2rem; /* Shifting icon over */
+  stroke-width: 1.5;
+}
+
+.sidebar-item.active .nav-icon {
+  stroke: var(--color-primary);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--color-border);
+  padding: 1rem 0;
+}
+
+.logout-btn {
+  color: var(--color-text-muted);
+}
+
+.logout-btn:hover {
+  color: #ef4444; /* Standard red for logout */
+  background: linear-gradient(90deg, rgba(239,68,68,0.05) 0%, rgba(255,255,255,0) 100%);
+}
+
+.logout-btn:hover .nav-indicator {
+  background-color: #ef4444;
+  opacity: 1;
+}
+.sidebar a {
+  transition: all 0.2s ease;
+}
+
+.sidebar a:hover {
+  background: #fff0f3;
+  color: #ff4d6d;
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 260px !important;
+    z-index: 1000;
+  }
+
+  .sidebar:not(.collapsed) {
+    transform: translateX(0);
+  }
+
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+  }
+
+  /* Force expanded styles on mobile even if technical state might flicker */
+  .sidebar .logo-text,
+  .sidebar .link-text {
+    display: block !important;
+  }
+
+  .sidebar .sidebar-item {
+    justify-content: flex-start !important;
+    padding: 1rem 1.5rem 1rem 0 !important;
+  }
+
+  .sidebar .nav-icon {
+    margin-left: 2rem !important;
+  }
+
+  .sidebar .sidebar-logo {
+    justify-content: flex-start !important;
+    padding: 2rem 2rem 3rem 2rem !important;
+  }
+}

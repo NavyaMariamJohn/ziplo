@@ -1,0 +1,117 @@
+/*
+ * File: MyLinks.css
+ * Description: Dashboard page: MyLinks. Standard user dashboard view for managing links and viewing analytics.
+ */
+
+/* ===== HEADER ===== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+/* ===== CREATE BUTTON ===== */
+.create-btn {
+  background: #ff537e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.create-btn:hover {
+  background: #e0486d;
+}
+
+/* ===== TOOLBAR ===== */
+.links-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.filter-select {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* ===== GRID (FIXED 🔥) ===== */
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* ===== EMPTY ===== */
+.empty-message {
+  text-align: center;
+  color: #888;
+  padding: 20px;
+}
+
+/* ===== PAGINATION ===== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.page-btn {
+  padding: 6px 12px;
+  border: none;
+  background: #f1f1f1;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.page-btn:hover {
+  background: #ffe8f0;
+  color: #ff537e;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.active-page {
+  background: #ff537e !important;
+  color: white;
+}
+.dashboard-scrollable-area {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.links-grid {
+  width: 100%;
+}
+.dashboard-main-content {
+  width: 100%;
+}
+

@@ -1,0 +1,208 @@
+/*
+ * File: LinksTable.css
+ * Description: Dashboard component for links table
+ */
+
+/* ===== CONTAINER ===== */
+.links-table-container {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  margin-top: var(--space-lg);
+}
+
+/* ===== HEADER ===== */
+.table-header-row {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: #fff;
+}
+
+.table-header-row h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ===== TABLE WRAPPER ===== */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* ===== TABLE ===== */
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+/* ===== HEADERS ===== */
+.custom-table th {
+  padding: 0.6rem 1.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+
+/* ===== ROWS ===== */
+.custom-table tbody tr {
+  background: #fff;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.custom-table tbody tr:hover {
+  transform: translateY(-2px);
+  background: #fff5f7;
+  box-shadow: 0 6px 16px rgba(255, 83, 126, 0.08);
+}
+
+/* ===== CELLS ===== */
+.custom-table td {
+  padding: 0.9rem 1.5rem;
+  font-size: 0.92rem;
+  vertical-align: middle;
+}
+
+/* ===== SHORT LINK ===== */
+.short-link {
+  color: #ff537e;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.short-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+/* ===== ORIGINAL URL ===== */
+.cell-original {
+  color: var(--color-text-muted);
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== CLICKS ===== */
+.clicks-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #E8F5E9;
+  color: #2E7D32;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #4CAF50;
+  border-radius: 50%;
+}
+
+/* ===== STATUS ===== */
+.status-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+/* 🌈 STATUS COLORS */
+.status-badge.active {
+  background: #e6f9f0;
+  color: #16a34a;
+}
+
+.status-badge.paused {
+  background: #fff4e5;
+  color: #f59e0b;
+}
+
+.status-badge.disabled {
+  background: #fdecea;
+  color: #dc2626;
+}
+
+/* ===== STATUS DROPDOWN ===== */
+.status-select {
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 0.75rem;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.status-select:hover {
+  border-color: #ff537e;
+}
+
+/* ===== ACTIONS ===== */
+.cell-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== ICON BUTTONS ===== */
+.icon-btn {
+  background: #f8f9fa;
+  border: 1px solid transparent;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.icon-btn:hover {
+  background: #ffe8f0;
+  color: #ff537e;
+  border-color: #ffd6e0;
+}
+
+.icon-btn.delete:hover {
+  background: #ffe5e5;
+  color: #e53935;
+  border-color: #ffcdd2;
+}
+
+.icon-btn.copied {
+  background: #ff537e;
+  color: #fff;
+  border-color: #ff537e;
+}
+
+.icon-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== EMPTY / LOADING ===== */
+.table-message {
+  text-align: center;
+  padding: 24px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}

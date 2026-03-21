@@ -1,0 +1,300 @@
+/*
+ * File: index.css
+ * Description: Global CSS file. Contains base styles, CSS variables, and resets for the entire application.
+ */
+
+:root {
+  /* Colors */
+  --color-primary: #ff6b84;
+  --color-primary-hover: #ff3b6f;
+  --color-primary-light: #ffe4ec;
+
+  --color-text: #2D3436;
+  --color-text-muted: #858788;
+
+  --color-background: #F8F9FA;
+  --color-surface: #FFFFFF;
+  --color-border: #E9ECEF;
+  --color-bg: #F8F9FA;
+  --color-success: #00B894;
+
+  /* Typography */
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Spacing */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 64px;
+  --space-2xl: 96px;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04), 0 4px 24px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: all 0.2s ease;
+}
+
+/* Base Utility Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }
+
+.text-center { text-align: center; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+.btn-secondary:hover {
+  border-color: var(--color-text-muted);
+}
+/* GLOBAL SMOOTH */
+* {
+  transition: all 0.2s ease;
+}
+
+body {
+  background: #fafafa;
+}
+
+/* INPUT */
+input {
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid #eee;
+}
+
+input:focus {
+  border-color: #ff4d6d;
+  box-shadow: 0 0 0 3px rgba(255,77,109,0.1);
+}
+
+/* BUTTON */
+button {
+  cursor: pointer;
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+h1, h2, h3 {
+  letter-spacing: -0.3px;
+}
+/* =========================
+   🎨 COLOR SYSTEM
+========================= */
+:root {
+  --primary: #ff537e;
+  --primary-light: #ffaac8;
+
+  --danger: #e17055;
+  --success: #00b894;
+
+  --text: #2d3436;
+  --text-muted: #6c757d;
+
+  --border: #e9ecef;
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+}
+
+/* =========================
+   🔘 BUTTONS
+========================= */
+
+.btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* PRIMARY */
+.btn-primary {
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+}
+
+/* SECONDARY */
+.btn-secondary {
+  background: white;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+
+/* DANGER */
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+/* DISABLED */
+.btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* =========================
+   🧾 INPUTS
+========================= */
+
+.input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(255,83,126,0.15);
+}
+
+.input-error {
+  border-color: var(--danger);
+}
+
+/* =========================
+   🟢 BADGES
+========================= */
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: rgba(0,184,148,0.1);
+  color: #00b894;
+}
+
+.badge-danger {
+  background: rgba(225,112,85,0.1);
+  color: #e17055;
+}
+
+.badge-muted {
+  background: #eee;
+  color: #666;
+}
+
+/* =========================
+   📦 CARDS
+========================= */
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+/* =========================
+   🍞 TOAST (react-hot-toast)
+========================= */
+
+.toast-success {
+  border-left: 4px solid #00b894;
+}
+
+.toast-error {
+  border-left: 4px solid #e17055;
+}
+:root {
+  --bg: #f9fafb;
+  --text: #111;
+}
+
+.dark {
+  --bg: #0f172a;
+  --text: #f1f5f9;
+}

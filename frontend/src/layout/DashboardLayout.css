@@ -1,0 +1,66 @@
+/*
+ * File: DashboardLayout.css
+ * Description: Wrapper styles for the Dashboard Layout and sidebar toggling.
+ */
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  transition: all 0.3s ease;
+}
+
+/* Sidebar structure is imported from Sidebar.css. Here we manage the main content margin. */
+.dashboard-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+}
+
+/* Base open state margin */
+.dashboard-layout.sidebar-open .dashboard-main-content {
+  margin-left: 250px;
+}
+
+/* Collapsed state margin */
+.dashboard-layout.sidebar-collapsed .dashboard-main-content {
+  margin-left: 80px;
+}
+
+.dashboard-content-wrapper {
+  overflow-y: auto;
+  height: 100%;
+}
+
+/* 🔥 MOBILE OVERLAY */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 90;
+  backdrop-filter: blur(2px);
+  animation: fadeInOverlay 0.2s ease;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-layout.desktop.sidebar-open .dashboard-main-content {
+    margin-left: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: row; 
+  }
+  .dashboard-layout.sidebar-open .dashboard-main-content,
+  .dashboard-layout.sidebar-collapsed .dashboard-main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+}
