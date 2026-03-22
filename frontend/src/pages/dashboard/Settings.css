@@ -1,33 +1,82 @@
-/*
- * File: Settings.css
- * Description: Dashboard page: Settings. Standard user dashboard view for managing links and viewing analytics.
- */
-
+/* =========================
+   CONTAINER
+========================= */
 .settings-container {
   padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 🔥 center page */
+  gap: 22px;
 }
 
 .settings-title {
   font-size: 1.8rem;
   font-weight: 600;
-  margin-bottom: 20px;
+  align-self: flex-start;
 }
 
+/* =========================
+   CARDS
+========================= */
 .settings-card {
-  max-width: 500px;
+  width: 100%;
+  max-width: 650px;
   background: var(--color-surface);
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(255, 91, 121, 0.05);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(255, 91, 121, 0.06);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
+.settings-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* =========================
+   PROFILE CARD
+========================= */
+.profile-card {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.profile-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-card button {
+  width: auto;            /* 🔥 fix stretch */
+  padding: 8px 16px;
+  white-space: nowrap;
+}
+
+/* =========================
+   GROUP
+========================= */
 .settings-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.settings-group.row {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
 
 .settings-group label {
@@ -35,15 +84,176 @@
   color: var(--color-text-muted);
 }
 
-.settings-group input {
+.settings-group input,
+.settings-group select {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid var(--color-border);
   outline: none;
+  width: 100%;
+  transition: border 0.2s ease;
 }
 
-.settings-actions {
+.settings-group input:focus,
+.settings-group select:focus {
+  border-color: #ff4d6d;
+}
+
+/* =========================
+   PASSWORD ROW
+========================= */
+.password-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.password-row input {
+  flex: 1;
+}
+
+.change-link {
+  font-size: 0.85rem;
+  color: #ff4d6d;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* =========================
+   TOGGLE SWITCH
+========================= */
+.toggle {
+  width: 42px;
+  height: 22px;
+  background: #ddd;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.toggle-circle {
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: 0.3s ease;
+}
+
+.toggle.active {
+  background: #ff4d6d;
+}
+
+.toggle.active .toggle-circle {
+  left: 22px;
+}
+
+/* =========================
+   DANGER ZONE
+========================= */
+.settings-card.danger {
+  border: 1px solid #ffe0e6;
+  background: #fff5f7;
+}
+
+.danger-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-danger {
+  background: #ff4d6d;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: auto; /* 🔥 fix full width issue */
+  transition: 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: #e13b5c;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+.settings-actions {
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  justify-content: flex-end;
   gap: 10px;
+}
+/* =========================
+   MODAL
+========================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal h3 {
+  margin-bottom: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 20px;
+  }
+
+  .settings-card {
+    max-width: 100%;
+  }
+
+  .profile-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .settings-group.row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .danger-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 }

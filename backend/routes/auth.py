@@ -150,3 +150,62 @@ def get_all_users():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@auth_bp.route("/change-password", methods=["PUT"])
+def change_password():
+
+    # 🔐 Get user from token (your existing system)
+    user_id, error, status = get_user_from_token()
+    if error:
+        return error, status
+
+    data = request.get_json()
+    current_password = data.get("currentPassword")
+    new_password = data.get("newPassword")
+
+    if not current_password or not new_password:
+        return jsonify({"error": "All fields required"}), 400
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # 🔹 Fetch current password
+        cursor.execute(
+            "SELECT password_hash FROM users WHERE id = %s",
+            (user_id,)
+        )
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        stored_password = user[0]
+
+        # 🔹 Verify current password (bcrypt)
+        if not bcrypt.checkpw(
+            current_password.encode("utf-8"),
+            stored_password.encode("utf-8")
+        ):
+            return jsonify({"error": "Incorrect current password"}), 400
+
+        # 🔹 Hash new password
+        new_hashed = bcrypt.hashpw(
+            new_password.encode("utf-8"),
+            bcrypt.gensalt()
+        ).decode("utf-8")
+
+        # 🔹 Update password
+        cursor.execute(
+            "UPDATE users SET password_hash = %s WHERE id = %s",
+            (new_hashed, user_id)
+        )
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "Password updated successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
