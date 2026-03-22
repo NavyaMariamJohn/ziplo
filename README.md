@@ -89,7 +89,7 @@ ziplo/
 ### 🔹 Clone Repository
 
 ```
-git clone https://github.com/your-username/ziplo.git
+git clone https://github.com/NavyaMariamJohn/ziplo.git
 cd ziplo
 ```
 
