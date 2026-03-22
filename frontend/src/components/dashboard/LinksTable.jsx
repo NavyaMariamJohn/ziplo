@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./LinksTable.css";
 import toast from "react-hot-toast";
-import API from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 import ConfirmModal from "../ui/ConfirmModal";
 
 function LinksTable({ urls, loading, refreshUrls }) {
@@ -36,11 +36,8 @@ function LinksTable({ urls, loading, refreshUrls }) {
     try {
       setDeleting(true);
 
-      const res = await fetch(`${API}/delete-url/${selectedId}`, {
+      const res = await fetchWithAuth(`/delete-url/${selectedId}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       const data = await res.json();
@@ -72,11 +69,10 @@ function LinksTable({ urls, loading, refreshUrls }) {
     }
 
     try {
-      const res = await fetch(`${API}/links/${id}/status`, {
+      const res = await fetchWithAuth(`/links/${id}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ status: newStatus }),
       });

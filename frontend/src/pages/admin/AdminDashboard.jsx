@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardLayout from "../../layout/DashboardLayout";
-import API from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 import toast from "react-hot-toast";
 
 function AdminDashboard() {
@@ -19,11 +19,7 @@ function AdminDashboard() {
   // 🔹 FETCH USERS
   const fetchUsers = async () => {
     try {
-      const res = await fetch(`${API}/admin/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await fetchWithAuth("/admin/users");
 
       if (res.status === 403) {
         toast.error("Access denied (Admin only)");
@@ -43,11 +39,7 @@ function AdminDashboard() {
   // 🔹 FETCH URLS
   const fetchUrls = async () => {
     try {
-      const res = await fetch(`${API}/admin/urls`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await fetchWithAuth("/admin/urls");
 
       if (res.status === 403) {
         toast.error("Access denied (Admin only)");

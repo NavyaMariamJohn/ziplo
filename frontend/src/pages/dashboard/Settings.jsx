@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import DashboardLayout from "../../layout/DashboardLayout";
-import API from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 import toast from "react-hot-toast";
 import "./Settings.css";
 
@@ -11,6 +11,8 @@ function Settings() {
   const [loading, setLoading] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -23,8 +25,6 @@ function Settings() {
 
   // 🔹 UPDATE PROFILE
   const handleUpdate = async () => {
-    const token = localStorage.getItem("token");
-
     if (!name.trim()) {
       toast.error("Name cannot be empty");
       return;
@@ -33,33 +33,25 @@ function Settings() {
     setLoading(true);
 
     try {
-      const res1 = await fetch(`${API}/update-profile`, {
+      const res1 = await fetchWithAuth("/update-profile", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       });
 
-      const res2 = await fetch(`${API}/update-avatar`, {
+      const res2 = await fetchWithAuth("/update-avatar", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ avatar }),
       });
 
-      if (!res1.ok || !res2.ok) {
-        throw new Error("Update failed");
-      }
+      if (!res1.ok || !res2.ok) throw new Error();
 
       localStorage.setItem("userName", name);
       localStorage.setItem("avatar", avatar);
 
       toast.success("Profile updated!");
-    } catch (err) {
+    } catch {
       toast.error("Error updating profile");
     } finally {
       setLoading(false);
@@ -88,30 +80,24 @@ function Settings() {
       return;
     }
 
-    const token = localStorage.getItem("token");
     setPasswordLoading(true);
 
     try {
-      const res = await fetch(`${API}/change-password`, {
+      const res = await fetchWithAuth("/change-password", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          currentPassword,
-          newPassword,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
       });
 
       const data = await res.json();
+
       if (res.status === 401) {
         toast.error("Session expired. Please login again.");
-
         localStorage.clear();
         window.location.href = "/login";
         return;
       }
+
       if (res.ok) {
         toast.success(data.message || "Password updated");
         setShowModal(false);
@@ -128,14 +114,31 @@ function Settings() {
     }
   };
 
-  // 🔹 DELETE ACCOUNT (TEMP)
-  const handleDelete = () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete your account?"
-    );
+  // 🔥 DELETE ACCOUNT (FIXED)
+  const handleDelete = async () => {
+    try {
+      const res = await fetchWithAuth("/delete-account", {
+        method: "DELETE",
+      });
 
-    if (confirmDelete) {
-      toast.success("Account deleted (demo)");
+      const data = await res.json();
+
+      if (res.status === 401) {
+        toast.error("Session expired. Please login again.");
+        localStorage.clear();
+        window.location.href = "/login";
+        return;
+      }
+
+      if (res.ok) {
+        toast.success("Account deleted successfully");
+        localStorage.clear();
+        window.location.href = "/";
+      } else {
+        toast.error(data.error || "Failed to delete account");
+      }
+    } catch {
+      toast.error("Server error");
     }
   };
 
@@ -268,7 +271,7 @@ function Settings() {
 
             <button
               className="btn btn-danger"
-              onClick={handleDelete}
+              onClick={() => setShowDeleteModal(true)}
             >
               Delete
             </button>
@@ -288,57 +291,68 @@ function Settings() {
           </button>
         </div>
 
-        {/* MODAL */}
+        {/* 🔐 PASSWORD MODAL */}
         {showModal && (
           <div className="modal-overlay">
             <div className="modal">
-
               <h3>Change Password</h3>
 
               <div className="settings-group">
-                <label>Current Password</label>
                 <input
                   type="password"
-                  value={currentPassword}
+                  placeholder="Current Password"
                   onChange={(e) => setCurrentPassword(e.target.value)}
                 />
               </div>
 
               <div className="settings-group">
-                <label>New Password</label>
                 <input
                   type="password"
-                  value={newPassword}
+                  placeholder="New Password"
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
               </div>
 
               <div className="settings-group">
-                <label>Confirm Password</label>
                 <input
                   type="password"
-                  value={confirmPassword}
+                  placeholder="Confirm Password"
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
 
               <div className="modal-actions">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
+                <button onClick={() => setShowModal(false)}>Cancel</button>
+                <button onClick={handleChangePassword}>
+                  {passwordLoading ? "Updating..." : "Update"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 🔥 DELETE MODAL */}
+        {showDeleteModal && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h3 style={{ color: "#e63946" }}>Delete Account</h3>
+              <p>This action cannot be undone.</p>
+
+              <div className="modal-actions">
+                <button onClick={() => setShowDeleteModal(false)}>
                   Cancel
                 </button>
 
                 <button
-                  className="btn btn-primary"
-                  onClick={handleChangePassword}
-                  disabled={passwordLoading}
+                  className="btn btn-danger"
+                  onClick={() => {
+                    handleDelete();
+                    setShowDeleteModal(false);
+                  }}
                 >
-                  {passwordLoading ? "Updating..." : "Update"}
+                  Delete
                 </button>
               </div>
-
             </div>
           </div>
         )}

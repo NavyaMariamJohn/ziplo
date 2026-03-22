@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Footer from '../../layout/Footer';
-import API from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 import toast from "react-hot-toast";
 import './ShortenPage.css';
 
@@ -22,19 +22,14 @@ function ShortenPage() {
     e.preventDefault();
     if (!longUrl) return;
 
-    const token = localStorage.getItem("token");
-
-    const headers = {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-    };
-
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${API}/create-url`, {
+      const res = await fetchWithAuth("/create-url", {
         method: "POST",
-        headers,
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           original_url: longUrl,
         }),

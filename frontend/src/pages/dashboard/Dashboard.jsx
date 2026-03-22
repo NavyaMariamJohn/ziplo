@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import DashboardLayout from '../../layout/DashboardLayout';
 import StatCard from '../../components/dashboard/StatCard';
 import LinksTable from '../../components/dashboard/LinksTable';
-import API from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 import toast from "react-hot-toast";
 import './Dashboard.css';
 
@@ -27,9 +27,7 @@ function Dashboard() {
     setLoadingUrls(true);
 
     try {
-      const res = await fetch(`${API}/user-urls`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetchWithAuth("/user-urls");
 
       const data = await res.json();
       setUrls(data);
@@ -57,11 +55,10 @@ function Dashboard() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API}/create-url`, {
+      const res = await fetchWithAuth("/create-url", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ original_url: newUrl }),
       });

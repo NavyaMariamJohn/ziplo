@@ -1,6 +1,6 @@
 /**
  * @file Register.jsx
- * @description Authentication page: Register. Handles user login, registration, and related flows.
+ * @description Authentication page: Register
  */
 
 import { useState } from "react";
@@ -21,12 +21,14 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // 🔥 Password strength
   const getStrength = () => {
     if (password.length < 6) return "Weak";
     if (password.match(/[A-Z]/) && password.match(/[0-9]/)) return "Strong";
     return "Medium";
   };
 
+  // 🔥 REGISTER HANDLER
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -38,33 +40,40 @@ function Register() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API}/register`, {
+      const res = await fetch(`${API}/register`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: name, // ✅ FIXED
+          username: name,
           email,
-          password
-        })
+          password,
+        }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (response.ok) {
+      // 🔥 HANDLE TOKEN EXPIRED / UNAUTHORIZED
+      if (res.status === 401) {
+        localStorage.clear();
+        navigate("/login");
+        return;
+      }
+
+      if (res.ok) {
         toast.success("Account created 🎉");
 
-        // 🔥 AUTO LOGIN
+        // 🔥 AUTO LOGIN (MAIN FIX)
         localStorage.setItem("token", data.token);
         localStorage.setItem("userName", data.username);
         localStorage.setItem("email", data.email);
         localStorage.setItem("role", data.role || "user");
 
+        // 🔥 REDIRECT
         setTimeout(() => {
           navigate("/dashboard");
         }, 500);
-
       } else {
         toast.error(data.error || "Registration failed");
       }
@@ -102,6 +111,7 @@ function Register() {
 
           <form onSubmit={handleRegister} className="auth-form">
 
+            {/* NAME */}
             <label>Full Name</label>
             <input
               type="text"
@@ -111,6 +121,7 @@ function Register() {
               required
             />
 
+            {/* EMAIL */}
             <label>Email Address</label>
             <input
               type="email"
@@ -138,7 +149,7 @@ function Register() {
               {getStrength()} Password
             </div>
 
-            {/* CONFIRM */}
+            {/* CONFIRM PASSWORD */}
             <label>Confirm Password</label>
             <div className="password-field">
               <input
@@ -151,11 +162,13 @@ function Register() {
               <span onClick={() => setShowConfirm(!showConfirm)}>👁</span>
             </div>
 
+            {/* TERMS */}
             <label className="remember-me">
               <input type="checkbox" required />
               I agree to Terms & Privacy Policy
             </label>
 
+            {/* BUTTON */}
             <button
               type="submit"
               className="btn-primary full"

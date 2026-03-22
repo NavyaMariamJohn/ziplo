@@ -30,25 +30,36 @@ def register():
         cursor = conn.cursor()
 
         cursor.execute(
-            "INSERT INTO users (username, email, password_hash, role) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO users (username, email, password_hash, role) VALUES (%s, %s, %s, %s) RETURNING id",
             (username, email, hashed_password.decode('utf-8'), 'user')
         )
+        user_id = cursor.fetchone()[0]
 
         conn.commit()
+
+        # 🔥 GENERATE TOKEN (same as login)
+        token = jwt.encode({
+            "user_id": user_id,
+            "role": "user",
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+        }, current_app.config['SECRET_KEY'], algorithm="HS256")
+
+        if isinstance(token, bytes):
+            token = token.decode("utf-8")
 
         cursor.close()
         conn.close()
 
         return jsonify({
             "message": "User registered successfully!",
+            "token": token,
             "username": username,
-            "email": email
+            "email": email,
+            "role": "user"
         }), 201
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
-
-
 # ===============================
 # LOGIN  🔥 SECURE FIXED
 # ===============================
@@ -208,4 +219,47 @@ def change_password():
         return jsonify({"message": "Password updated successfully"}), 200
 
     except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+# ===============================
+# DELETE ACCOUNT
+# ===============================
+@auth_bp.route("/delete-account", methods=["DELETE"])
+def delete_account():
+
+    user_id, error, status = get_user_from_token()
+    if error:
+        return error, status
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # 🔥 delete clicks first (using correct column)
+        cursor.execute(
+            "DELETE FROM clicks WHERE url_id IN (SELECT id FROM urls WHERE user_id = %s)",
+            (user_id,)
+        )
+
+        # 🔥 delete urls
+        cursor.execute(
+            "DELETE FROM urls WHERE user_id = %s",
+            (user_id,)
+        )
+
+        # 🔥 delete user
+        cursor.execute(
+            "DELETE FROM users WHERE id = %s",
+            (user_id,)
+        )
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "Account deleted successfully"}), 200
+
+    except Exception as e:
+        print("DELETE ERROR:", str(e))
         return jsonify({"error": str(e)}), 500

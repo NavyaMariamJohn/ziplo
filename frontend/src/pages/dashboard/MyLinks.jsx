@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../layout/DashboardLayout";
 import LinkCard from "../../components/dashboard/LinkCard";
-import API from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 import toast from "react-hot-toast";
 import "./MyLinks.css";
 
@@ -26,11 +26,7 @@ function MyLinks() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`${API}/user-urls`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await fetchWithAuth("/user-urls");
 
       const data = await res.json();
       setUrls(data);

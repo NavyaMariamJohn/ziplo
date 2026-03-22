@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "../../layout/DashboardLayout";
-import API from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 import "./Analytics.css";
 
 import {
@@ -23,9 +23,7 @@ function AnalyticsOverview() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`${API}/analytics-overview`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetchWithAuth("/analytics-overview");
 
       const result = await res.json();
       setData(result);

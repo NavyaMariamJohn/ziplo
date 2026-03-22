@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LinkCard.css";
 import toast from "react-hot-toast";
-import API from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 import ConfirmModal from "../ui/ConfirmModal";
 
 function LinkCard({ link, refreshUrls }) {
@@ -25,11 +25,8 @@ function LinkCard({ link, refreshUrls }) {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API}/delete-url/${link.id}`, {
+      const res = await fetchWithAuth(`/delete-url/${link.id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       const data = await res.json();
@@ -60,11 +57,10 @@ function LinkCard({ link, refreshUrls }) {
     }
 
     try {
-      const res = await fetch(`${API}/links/${link.id}/status`, {
+      const res = await fetchWithAuth(`/links/${link.id}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ status: newStatus }),
       });

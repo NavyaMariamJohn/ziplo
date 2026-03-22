@@ -5,7 +5,7 @@
 
 import "./LinksTable.css";
 import toast from "react-hot-toast";
-import API from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 
 function ManageLinksTable({ urls, loading, refreshUrls }) {
 
@@ -21,11 +21,8 @@ function ManageLinksTable({ urls, loading, refreshUrls }) {
     if (!window.confirm("Delete this link?")) return;
 
     try {
-      const res = await fetch(`${API}/delete-url/${id}`, {
+      const res = await fetchWithAuth(`/delete-url/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       const data = await res.json();

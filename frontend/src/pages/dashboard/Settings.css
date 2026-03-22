@@ -2,17 +2,19 @@
    CONTAINER
 ========================= */
 .settings-container {
-  padding: 30px;
+  padding: 32px;
   display: flex;
   flex-direction: column;
-  align-items: center; /* 🔥 center page */
-  gap: 22px;
+  align-items: center;
+  gap: 24px;
+  animation: fadeIn 0.4s ease;
 }
 
 .settings-title {
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-size: 1.9rem;
+  font-weight: 700;
   align-self: flex-start;
+  letter-spacing: -0.3px;
 }
 
 /* =========================
@@ -21,17 +23,24 @@
 .settings-card {
   width: 100%;
   max-width: 650px;
-  background: var(--color-surface);
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(255, 91, 121, 0.06);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  padding: 26px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+  transition: all 0.25s ease;
+}
+
+.settings-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.08);
 }
 
 .settings-card h3 {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
 }
 
@@ -51,14 +60,15 @@
 }
 
 .profile-avatar {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #ffe3e8;
 }
 
 .profile-card button {
-  width: auto;            /* 🔥 fix stretch */
+  width: auto;
   padding: 8px 16px;
   white-space: nowrap;
 }
@@ -76,27 +86,30 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .settings-group label {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--color-text-muted);
+  font-weight: 500;
 }
 
 .settings-group input,
 .settings-group select {
-  padding: 10px;
-  border-radius: 8px;
+  padding: 11px;
+  border-radius: 10px;
   border: 1px solid var(--color-border);
   outline: none;
   width: 100%;
-  transition: border 0.2s ease;
+  transition: all 0.2s ease;
+  background: #fff;
 }
 
 .settings-group input:focus,
 .settings-group select:focus {
   border-color: #ff4d6d;
+  box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.15);
 }
 
 /* =========================
@@ -117,14 +130,19 @@
   color: #ff4d6d;
   cursor: pointer;
   white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.change-link:hover {
+  opacity: 0.7;
 }
 
 /* =========================
    TOGGLE SWITCH
 ========================= */
 .toggle {
-  width: 42px;
-  height: 22px;
+  width: 44px;
+  height: 24px;
   background: #ddd;
   border-radius: 20px;
   position: relative;
@@ -133,8 +151,8 @@
 }
 
 .toggle-circle {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   background: white;
   border-radius: 50%;
   position: absolute;
@@ -156,7 +174,7 @@
 ========================= */
 .settings-card.danger {
   border: 1px solid #ffe0e6;
-  background: #fff5f7;
+  background: linear-gradient(135deg, #fff5f7, #fff);
 }
 
 .danger-row {
@@ -167,18 +185,19 @@
 }
 
 .btn-danger {
-  background: #ff4d6d;
+  background: linear-gradient(135deg, #ff4d6d, #ff758f);
   color: #fff;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 9px 18px;
+  border-radius: 10px;
   cursor: pointer;
-  width: auto; /* 🔥 fix full width issue */
-  transition: 0.2s ease;
+  width: auto;
+  transition: all 0.2s ease;
 }
 
 .btn-danger:hover {
-  background: #e13b5c;
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(255, 77, 109, 0.3);
 }
 
 /* =========================
@@ -191,8 +210,9 @@
   justify-content: flex-end;
   gap: 10px;
 }
+
 /* =========================
-   MODAL
+   MODAL (UPGRADED)
 ========================= */
 .modal-overlay {
   position: fixed;
@@ -200,26 +220,31 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(15, 15, 15, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
+  animation: fadeIn 0.3s ease;
 }
 
 .modal {
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  padding: 26px;
+  border-radius: 16px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  animation: scaleIn 0.25s ease;
 }
 
 .modal h3 {
-  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .modal-actions {
@@ -227,6 +252,30 @@
   justify-content: flex-end;
   gap: 10px;
 }
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* =========================
    RESPONSIVE
 ========================= */

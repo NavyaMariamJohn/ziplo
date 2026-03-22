@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardLayout from "../../layout/DashboardLayout";
-import API from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 import "./Analytics.css";
 
 import {
@@ -31,9 +31,7 @@ function Analytics() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`${API}/location-clicks/${shortCode}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetchWithAuth(`/location-clicks/${shortCode}`);
 
       const data = await res.json();
       setLocationData(data);
@@ -47,9 +45,7 @@ function Analytics() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`${API}/user-urls`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetchWithAuth("/user-urls");
 
       const data = await res.json();
       setUrls(data);
@@ -79,9 +75,7 @@ function Analytics() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`${API}/analytics/${shortCode}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetchWithAuth(`/analytics/${shortCode}`);
 
       const data = await res.json();
       setAnalytics(data);
