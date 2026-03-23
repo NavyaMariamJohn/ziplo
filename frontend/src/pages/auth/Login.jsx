@@ -2,11 +2,12 @@
  * @file Login.jsx
  * @description Authentication page: Login. Handles user login, registration, and related flows.
  */
-
+import { GoogleLogin } from '@react-oauth/google';
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../../utils/api";
 import toast from "react-hot-toast";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import "./Auth.css";
 
 function Login() {
@@ -15,6 +16,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -86,29 +88,45 @@ function Login() {
 
           <form onSubmit={handleLogin} className="auth-form">
 
-            <label>Email Address</label>
-            <input
-              type="email"
-              placeholder="you@organization.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <div className="form-group">
+              <label>Email Address</label>
+              <input
+                type="email"
+                placeholder="you@organization.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="form-group">
+              <label>Password</label>
+              <div className="password-field">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
+            </div>
 
             <div className="auth-options">
-              <label>
-                <input type="checkbox" /> Remember me
+              <label className="checkbox-label">
+                <input type="checkbox" /> 
+                <span>Remember me</span>
               </label>
-              <span className="forgot">Forgot password?</span>
+              <Link to="/forgot-password" className="forgot">
+                Forgot password?
+              </Link>
             </div>
 
             <button
@@ -124,8 +142,13 @@ function Login() {
           <div className="divider">or continue with</div>
 
           <div className="social-login">
-            <button className="btn-outline">Google</button>
-            <button className="btn-outline">GitHub</button>
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+            console.log(credentialResponse);}}
+            onError={() => {
+            console.log("Login Failed");
+           }}
+          />
           </div>
 
           <p className="bottom-text">

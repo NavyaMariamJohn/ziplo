@@ -4,10 +4,12 @@ from utils.jwt_helper import get_user_from_token, is_admin
 import bcrypt
 import jwt
 import datetime
+from flask_mail import Message
+from time import time
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 
-
+last_request_time = {}
 # ===============================
 # REGISTER
 # ===============================
@@ -262,4 +264,97 @@ def delete_account():
 
     except Exception as e:
         print("DELETE ERROR:", str(e))
+        return jsonify({"error": str(e)}), 500
+    
+
+# ===============================
+# FORGOT PASSWORD
+# ===============================
+@auth_bp.route("/forgot-password", methods=["POST"])
+def forgot_password():
+    try:
+        data = request.get_json()
+        email = data.get("email")
+
+        if not email:
+            return jsonify({"error": "Email is required"}), 400
+
+        current_time = time()
+
+        if email in last_request_time:
+            if current_time - last_request_time[email] < 900:
+                return jsonify({"error": "Wait 15 minutes"}), 429
+
+        last_request_time[email] = current_time
+
+        token = jwt.encode({
+            "email": email,
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
+        }, current_app.config['SECRET_KEY'], algorithm="HS256")
+
+        reset_link = f"http://localhost:5173/reset-password/{token}"
+
+        msg = Message(
+            "Password Reset",
+            sender=current_app.config['MAIL_USERNAME'],
+            recipients=[email]
+        )
+
+        msg.html = f"""
+        <h3>Password Reset</h3>
+        <p>Click below:</p>
+        <a href="{reset_link}">Reset Password</a>
+        """
+
+        current_app.extensions['mail'].send(msg)
+
+        return jsonify({"message": "Reset link sent"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ===============================
+# RESET PASSWORD
+# ===============================
+@auth_bp.route("/reset-password/<token>", methods=["POST"])
+def reset_password(token):
+    try:
+        data = request.get_json()
+        new_password = data.get("password")
+
+        decoded = jwt.decode(
+            token,
+            current_app.config['SECRET_KEY'],
+            algorithms=["HS256"]
+        )
+
+        email = decoded.get("email")
+
+        hashed_password = bcrypt.hashpw(
+            new_password.encode('utf-8'),
+            bcrypt.gensalt()
+        ).decode('utf-8')
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "UPDATE users SET password_hash = %s WHERE email = %s",
+            (hashed_password, email)
+        )
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({"message": "Password reset successful"}), 200
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Token expired"}), 400
+
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 400
+
+    except Exception as e:
         return jsonify({"error": str(e)}), 500

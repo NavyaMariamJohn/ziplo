@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../../utils/api";
 import toast from "react-hot-toast";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import "./Auth.css";
 
 function Register() {
@@ -132,40 +133,58 @@ function Register() {
             />
 
             {/* PASSWORD */}
-            <label>Password</label>
-            <div className="password-field">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Create a strong password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <span onClick={() => setShowPassword(!showPassword)}>👁</span>
-            </div>
-
-            {/* STRENGTH */}
-            <div className={`strength ${getStrength().toLowerCase()}`}>
-              {getStrength()} Password
+            <div className="form-group">
+              <div className="label-row">
+                <label>Password</label>
+                {password && (
+                  <span className={`strength-badge ${getStrength().toLowerCase()}`}>
+                    {getStrength()}
+                  </span>
+                )}
+              </div>
+              <div className="password-field">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Create a strong password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
             </div>
 
             {/* CONFIRM PASSWORD */}
-            <label>Confirm Password</label>
-            <div className="password-field">
-              <input
-                type={showConfirm ? "text" : "password"}
-                placeholder="Re-enter password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-              <span onClick={() => setShowConfirm(!showConfirm)}>👁</span>
+            <div className="form-group">
+              <label>Confirm Password</label>
+              <div className="password-field">
+                <input
+                  type={showConfirm ? "text" : "password"}
+                  placeholder="Re-enter password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                >
+                  {showConfirm ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
             </div>
 
             {/* TERMS */}
-            <label className="remember-me">
+            <label className="remember-me checkbox-label">
               <input type="checkbox" required />
-              I agree to Terms & Privacy Policy
+              <span>I agree to Terms & Privacy Policy</span>
             </label>
 
             {/* BUTTON */}

@@ -4,6 +4,8 @@ import { jwtDecode } from "jwt-decode";
 
 import Dashboard from "./pages/dashboard/Dashboard";
 import Login from "./pages/auth/Login";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import Register from "./pages/auth/Register";
 import Landing from "./pages/landing/Landing";
 import Analytics from "./pages/dashboard/LinkAnalytics";
@@ -63,6 +65,8 @@ function App() {
           {/* 🌐 PUBLIC */}
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/register" element={<Register />} />
           <Route path="/shorten" element={<ShortenPage />} />
 
