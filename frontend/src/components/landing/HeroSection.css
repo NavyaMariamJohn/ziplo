@@ -30,7 +30,8 @@
 
 /* TITLE */
 .hero-title {
-  font-size: 4rem; /* 56px */
+  font-size: 4rem;
+  /* 56px */
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -1px;

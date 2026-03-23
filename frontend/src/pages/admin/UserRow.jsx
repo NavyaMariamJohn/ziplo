@@ -7,24 +7,31 @@ import UserActionsDropdown from "./UserActionsDropdown";
 function UserRow({ user }) {
   return (
     <div className="table-row">
-      <div className="user-info">
-        <div className="avatar">
-          {user.name?.charAt(0)}
+      <div className="user-info col-user">
+        <div className={`avatar-box ${user.role?.toLowerCase()}`}>
+          {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'}
         </div>
-        <span>{user.name}</span>
+        <div className="name-wrap">
+          <span className="user-name">{user.name}</span>
+          <span className="user-id">#{user._id?.substring(0, 6)}</span>
+        </div>
       </div>
 
-      <span>{user.email}</span>
-      <span className={`role ${user.role}`}>
-        {user.role}
+      <span className="col-email">{user.email}</span>
+      <span className="col-role">
+        <span className={`role-badge ${user.role?.toLowerCase()}`}>
+          {user.role}
+        </span>
       </span>
-      <span>{user.linksCount}</span>
+      <span className="col-links">{user.linksCount || 0}</span>
 
-      <span className={`status ${user.status}`}>
-        ●
+      <span className="col-status">
+        <span className={`status-dot ${user.status?.toLowerCase()}`}>●</span>
       </span>
 
-      <UserActionsDropdown user={user} />
+      <div className="col-actions">
+        <UserActionsDropdown user={user} />
+      </div>
     </div>
   );
 }

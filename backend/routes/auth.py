@@ -164,6 +164,49 @@ def get_all_users():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+# ===============================
+# ADMIN USER STATS
+# ===============================
+@auth_bp.route("/admin/user-stats", methods=["GET"])
+def get_user_stats():
+
+    user_id, error, status = get_user_from_token()
+    if error:
+        return error, status
+
+    if not is_admin(user_id):
+        return jsonify({"error": "Admin access required"}), 403
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT 
+              COUNT(*) AS total_users,
+              COUNT(*) FILTER (WHERE is_active = true) AS active_users,
+              COUNT(*) FILTER (WHERE is_active = false) AS suspended_users,
+              COUNT(*) FILTER (WHERE role = 'admin') AS admin_users,
+              COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '7 days') AS new_users
+            FROM users;
+        """)
+
+        stats = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+            "total_users": stats[0],
+            "active_users": stats[1],
+            "suspended_users": stats[2],
+            "admin_users": stats[3],
+            "new_users": stats[4]
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
 @auth_bp.route("/change-password", methods=["PUT"])
 def change_password():
 

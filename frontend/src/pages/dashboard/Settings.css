@@ -260,6 +260,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -270,6 +271,7 @@
     transform: scale(0.92);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;

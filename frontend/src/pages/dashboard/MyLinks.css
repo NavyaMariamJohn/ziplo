@@ -103,15 +103,17 @@
   background: #ff537e !important;
   color: white;
 }
+
 .dashboard-scrollable-area {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
 }
+
 .links-grid {
   width: 100%;
 }
+
 .dashboard-main-content {
   width: 100%;
 }
-

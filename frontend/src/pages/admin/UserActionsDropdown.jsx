@@ -8,19 +8,23 @@ function UserActionsDropdown({ user }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="dropdown">
-      <button onClick={() => setOpen((prev) => !prev)}>
+    <div className="user-actions-dropdown">
+      <button className="menu-trigger" onClick={() => setOpen((prev) => !prev)}>
         ⋮
       </button>
 
       {open && (
-        <div className="dropdown-menu">
-          <p>👁 View Profile</p>
-          <p>✏️ Edit</p>
-          <p>🔗 View Links</p>
-          <p>⏸ Suspend</p>
-          <p className="danger">🗑 Delete</p>
-        </div>
+        <>
+          <div className="dropdown-overlay" onClick={() => setOpen(false)} />
+          <div className="dropdown-menu shadow">
+            <button className="menu-item"><span className="icon">👁</span> View Profile</button>
+            <button className="menu-item"><span className="icon">✏️</span> Edit</button>
+            <button className="menu-item"><span className="icon">🔗</span> View Links</button>
+            <button className="menu-item"><span className="icon">⏸</span> Suspend</button>
+            <div className="divider" />
+            <button className="menu-item danger"><span className="icon">🗑</span> Delete</button>
+          </div>
+        </>
       )}
     </div>
   );
