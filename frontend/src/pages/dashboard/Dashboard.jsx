@@ -14,6 +14,7 @@ import './Dashboard.css';
 function Dashboard() {
 
   const [newUrl, setNewUrl] = useState("");
+  const [customCode, setCustomCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [createdShortUrl, setCreatedShortUrl] = useState("");
   const [urls, setUrls] = useState([]);
@@ -60,7 +61,10 @@ function Dashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ original_url: newUrl }),
+        body: JSON.stringify({ 
+          original_url: newUrl,
+          custom_code: customCode.trim()
+        }),
       });
 
       const data = await res.json();
@@ -69,6 +73,7 @@ function Dashboard() {
         const full = `http://localhost:5000/api/${data.short_code}`;
         setCreatedShortUrl(full);
         setNewUrl("");
+        setCustomCode("");
         toast.success("Link created 🚀");
         fetchUrls();
       } else {
@@ -114,6 +119,14 @@ function Dashboard() {
                 placeholder="Paste your long URL..."
                 value={newUrl}
                 onChange={(e) => setNewUrl(e.target.value)}
+              />
+
+              <input
+                type="text"
+                className="custom-code-input"
+                placeholder="Custom name (optional)"
+                value={customCode}
+                onChange={(e) => setCustomCode(e.target.value)}
               />
 
               <button onClick={handleCreate} disabled={loading}>

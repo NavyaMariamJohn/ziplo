@@ -19,11 +19,11 @@ def create_url():
         user_id = None
 
     data = request.get_json()
-
     if not data or "original_url" not in data:
         return jsonify({"error": "Original URL is required"}), 400
 
     original_url = data["original_url"]
+    custom_code = data.get("custom_code")
 
     if not original_url.startswith("http://") and not original_url.startswith("https://"):
         return jsonify({"error": "Invalid URL. Must start with http:// or https://"}), 400
@@ -32,34 +32,47 @@ def create_url():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 🔹 Check if already exists
-        if user_id:
-            cursor.execute(
-                "SELECT short_code FROM urls WHERE user_id = %s AND original_url = %s",
-                (user_id, original_url)
-            )
+        # 🔹 Handle Custom Code vs Random
+        if custom_code:
+            # Validate custom_code (alphanumeric only)
+            if not custom_code.isalnum():
+                return jsonify({"error": "Custom code must be alphanumeric"}), 400
+            
+            # Check if custom code is already in use
+            cursor.execute("SELECT id FROM urls WHERE short_code = %s", (custom_code,))
+            if cursor.fetchone():
+                return jsonify({"error": "Custom alias already in use"}), 400
+            
+            short_code = custom_code
         else:
-            cursor.execute(
-                "SELECT short_code FROM urls WHERE user_id IS NULL AND original_url = %s",
-                (original_url,)
-            )
+            # 🔹 Check if already exists (only for random generation)
+            if user_id:
+                cursor.execute(
+                    "SELECT short_code FROM urls WHERE user_id = %s AND original_url = %s",
+                    (user_id, original_url)
+                )
+            else:
+                cursor.execute(
+                    "SELECT short_code FROM urls WHERE user_id IS NULL AND original_url = %s",
+                    (original_url,)
+                )
 
-        row = cursor.fetchone()
-        if row:
-            return jsonify({
-                "message": "URL already shortened",
-                "short_code": row[0]
-            }), 200
+            row = cursor.fetchone()
+            if row:
+                return jsonify({
+                    "message": "URL already shortened",
+                    "short_code": row[0]
+                }), 200
 
-        # 🔹 Generate unique short code
-        while True:
-            short_code = generate_short_code()
-            cursor.execute(
-                "SELECT id FROM urls WHERE short_code = %s",
-                (short_code,)
-            )
-            if not cursor.fetchone():
-                break
+            # 🔹 Generate unique random short code
+            while True:
+                short_code = generate_short_code()
+                cursor.execute(
+                    "SELECT id FROM urls WHERE short_code = %s",
+                    (short_code,)
+                )
+                if not cursor.fetchone():
+                    break
 
         # 🔹 Insert URL
         cursor.execute(
