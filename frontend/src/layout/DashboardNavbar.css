@@ -13,12 +13,12 @@
 }
 
 .sidebar-toggle-btn {
+  display: none;
   background: none;
   border: none;
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
-  display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.2s ease;
@@ -27,6 +27,14 @@
 
 .sidebar-toggle-btn:hover {
   background: var(--color-bg);
+}
+
+.navbar-logo-mobile {
+  display: none;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ff537e;
+  letter-spacing: -0.5px;
 }
 
 /* =========================
@@ -207,6 +215,10 @@
 }
 
 @media (max-width: 768px) {
+  .sidebar-toggle-btn {
+    display: flex;
+  }
+
   .dashboard-navbar {
     padding: 1rem;
     gap: 10px;
@@ -224,6 +236,10 @@
   
   .search-icon {
     margin-right: 0.5rem;
+  }
+
+  .navbar-logo-mobile {
+    display: block;
   }
 
   .profile-dropdown {

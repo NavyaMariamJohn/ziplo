@@ -33,7 +33,7 @@ function DashboardLayout({ children }) {
         <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
       )}
 
-      <Sidebar isOpen={isSidebarOpen} isMobile={isMobile} />
+      <Sidebar isOpen={isSidebarOpen} isMobile={isMobile} toggleSidebar={toggleSidebar} onClose={() => setIsSidebarOpen(false)} />
       <main className="dashboard-main-content">
         <DashboardNavbar toggleSidebar={toggleSidebar} />
         <div className="dashboard-content-wrapper">

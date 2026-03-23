@@ -1,8 +1,3 @@
-/**
- * @file App.jsx
- * @description Root React component. Sets up routing and global providers for the application.
- */
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
@@ -17,13 +12,14 @@ import MyLinks from "./pages/dashboard/MyLinks";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Settings from "./pages/dashboard/Settings";
 import AnalyticsOverview from "./pages/dashboard/AnalyticsOverview";
+import UserManagement from "./pages/admin/UserManagement";
 
-// 🔐 Check if logged in
+// 🔐 Auth check
 const isAuthenticated = () => {
   return localStorage.getItem("token") !== null;
 };
 
-// 🔐 Check admin from TOKEN
+// 🔐 Admin check
 const isAdmin = () => {
   const token = localStorage.getItem("token");
   if (!token) return false;
@@ -89,7 +85,6 @@ function App() {
             }
           />
 
-          {/* ✅ FIXED: USE Analytics */}
           <Route
             path="/dashboard/link/:id"
             element={
@@ -99,7 +94,6 @@ function App() {
             }
           />
 
-          {/* Optional: keep general analytics */}
           <Route
             path="/analytics"
             element={
@@ -108,6 +102,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/analytics/:id"
             element={
@@ -116,6 +111,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/settings"
             element={
@@ -132,6 +128,18 @@ function App() {
               <ProtectedRoute>
                 <AdminRoute>
                   <AdminDashboard />
+                </AdminRoute>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ✅ FIXED: PROTECTED ADMIN USERS ROUTE */}
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute>
+                <AdminRoute>
+                  <UserManagement />
                 </AdminRoute>
               </ProtectedRoute>
             }

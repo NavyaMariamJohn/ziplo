@@ -239,13 +239,13 @@
   min-width: 0 !important;
 }
 
-/* 🔥 chart hover */
+/*  chart hover */
 .analytics-chart-card:hover {
   box-shadow: 0 15px 40px rgba(255, 77, 109, 0.15);
   transition: all 0.3s ease;
 }
 
-/* 🔥 card animation */
+/*  card animation */
 .analytics-card {
   animation: fadeUp 0.4s ease;
 }
@@ -261,7 +261,7 @@
   }
 }
 
-/* 🔥 top link hover */
+/*  top link hover */
 .top-link-row:hover {
   opacity: 0.95;
   transform: translateX(3px);

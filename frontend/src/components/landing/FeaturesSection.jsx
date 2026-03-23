@@ -11,7 +11,6 @@ function FeaturesSection() {
     { title: 'Analytics', desc: 'Powerful real-time analytics to track clicks, referrers, and locations.', icon: '📊' },
     { title: 'Security', desc: 'Enterprise-grade security and role-based access control.', icon: '🔒' },
     { title: 'Custom aliases', desc: 'Create branded links with custom back-halves for better trust.', icon: '✏️' },
-    { title: 'QR codes', desc: 'Instantly generate scannable QR codes for your short links.', icon: '📱' },
     { title: 'Bulk links', desc: 'Shorten multiple URLs at once to save hours of manual work.', icon: '📦' },
   ];
 

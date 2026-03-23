@@ -255,7 +255,8 @@ def get_all_urls():
                 u.short_code,
                 u.status,
                 users.username,
-                COUNT(c.id) AS click_count
+                COUNT(c.id) AS click_count,
+                MIN(u.created_at) AS created_at
             FROM urls u
             LEFT JOIN users ON u.user_id = users.id
             LEFT JOIN clicks c ON u.id = c.url_id
@@ -272,7 +273,8 @@ def get_all_urls():
                 "short_code": row[2],
                 "status": row[3],
                 "created_by": row[4],
-                "click_count": row[5]
+                "click_count": row[5],
+                "created_at": str(row[6]) if len(row) > 6 else None
             })
 
         cursor.close()
