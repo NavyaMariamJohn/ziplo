@@ -83,16 +83,26 @@ def redirect_url(short_code):
     if ip in ["127.0.0.1", "localhost", "::1"]:
         location = "Local Test"
     else:
+        # 1. Primary: ip-api.com (more generous rate limits for servers)
         try:
-            geo = requests.get(
-                f"https://ipapi.co/{ip}/json/",
-                timeout=2,
-                headers={'User-Agent': 'Ziplo-URL-Shortener'}
-            ).json()
-            location = geo.get("country_name", "Unknown")
-        except Exception as e:
-            print(f"Geo Error: {e}")
-            location = "Unknown"
+            geo_resp = requests.get(f"http://ip-api.com/json/{ip}", timeout=2)
+            if geo_resp.status_code == 200:
+                location = geo_resp.json().get("country", "Unknown")
+        except:
+            pass
+
+        # 2. Fallback: ipapi.co
+        if location == "Unknown":
+            try:
+                geo = requests.get(
+                    f"https://ipapi.co/{ip}/json/",
+                    timeout=2,
+                    headers={'User-Agent': 'Ziplo-URL-Shortener'}
+                ).json()
+                location = geo.get("country_name", "Unknown")
+            except Exception as e:
+                print(f"Geo Error: {e}")
+                location = "Unknown"
 
     try:
         conn = get_db_connection()
