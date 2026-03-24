@@ -55,10 +55,7 @@ function timeAgo(dateString) {
 }
 
 function AdminDashboard() {
-  const [users, setUsers] = useState([]);
-  const [urls, setUrls] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+  const [trend, setTrend] = useState([]);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -69,11 +66,15 @@ function AdminDashboard() {
 
     const load = async () => {
       try {
-        const usersData = await fetchWithAuth("/admin/users");
-        const urlsData = await fetchWithAuth("/admin/urls");
+        const [usersData, urlsData, trendData] = await Promise.all([
+          fetchWithAuth("/admin/users"),
+          fetchWithAuth("/admin/urls"),
+          fetchWithAuth("/admin/signup-trend")
+        ]);
 
-        setUsers(usersData.users || usersData); // Support multi-format
+        setUsers(usersData.users || usersData);
         setUrls(urlsData);
+        setTrend(trendData);
       } catch {
         toast.error("Failed to load admin data");
       } finally {
@@ -95,29 +96,22 @@ function AdminDashboard() {
     (u) => u.role !== "inactive"
   ).length;
 
-  // Chart data: Signups for the last 7 days (guaranteed 7 days)
+  // Chart data: Signups for the last 7 days
   const chartData = [];
   const now = new Date();
   
-  // 1. Pre-generate last 7 days with 0 counts
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(now.getDate() - i);
-    const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    chartData.push({ name: dateStr, signups: 0, fullDate: d.toDateString() });
+    const label = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    const isoDate = d.toISOString().split('T')[0]; // "YYYY-MM-DD"
+    
+    const dayData = (trend || []).find(t => t.date === isoDate);
+    chartData.push({ 
+      name: label, 
+      signups: dayData ? dayData.count : 0 
+    });
   }
-
-  // 2. Fill with actual data
-  users.forEach(u => {
-    if (u.created_at) {
-      const d = new Date(u.created_at);
-      if (!isNaN(d)) {
-        const dateStr = d.toDateString();
-        const entry = chartData.find(c => c.fullDate === dateStr);
-        if (entry) entry.signups += 1;
-      }
-    }
-  });
 
   // Activity Feed
   let activities = [];

@@ -53,6 +53,39 @@ def get_user_stats():
         return jsonify({"error": str(e)}), 500
 
 # ================================
+# 📈 GET SIGNUP TREND (Last 7 Days)
+# ================================
+@admin_bp.route('/signup-trend', methods=['GET'])
+def get_signup_trend():
+    _, error, status = admin_required()
+    if error: return error, status
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Returns count per day for last 7 days
+        cur.execute("""
+            SELECT 
+                DATE(created_at) as day, 
+                COUNT(*) as count
+            FROM users
+            WHERE created_at > NOW() - INTERVAL '7 days'
+            GROUP BY day
+            ORDER BY day ASC;
+        """)
+
+        rows = cur.fetchall()
+        trend = [{"date": str(row[0]), "count": row[1]} for row in rows]
+
+        cur.close()
+        conn.close()
+        return jsonify(trend), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ================================
 # 👥 GET ALL USERS (WITH FILTERS & PAGINATION)
 # ================================
 @admin_bp.route('/users', methods=['GET'])
