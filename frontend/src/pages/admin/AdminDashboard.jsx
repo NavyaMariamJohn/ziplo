@@ -57,7 +57,9 @@ function timeAgo(dateString) {
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [urls, setUrls] = useState([]);
+  const [trend, setTrend] = useState([]);
   const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
