@@ -60,7 +60,7 @@ function Dashboard() {
         }),
       });
 
-      const full = `http://localhost:5000/api/${data.short_code}`;
+      const full = `${API}/${data.short_code}`;
       setCreatedShortUrl(full);
       setNewUrl("");
       setCustomCode("");

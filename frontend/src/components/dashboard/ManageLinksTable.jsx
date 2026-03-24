@@ -10,7 +10,7 @@ import API, { fetchWithAuth } from "../../utils/api";
 function ManageLinksTable({ urls, loading, refreshUrls }) {
 
   const handleCopy = (shortCode) => {
-    const fullUrl = `http://localhost:5000/api/${shortCode}`;
+    const fullUrl = `${API}/${shortCode}`;
     navigator.clipboard.writeText(fullUrl);
     toast.success("Copied!");
   };
@@ -74,7 +74,7 @@ function ManageLinksTable({ urls, loading, refreshUrls }) {
                   {/* SHORT */}
                   <td>
                     <a
-                      href={`http://localhost:5000/api/${item.short_code}`}
+                      href={`${API}/${item.short_code}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="short-link"

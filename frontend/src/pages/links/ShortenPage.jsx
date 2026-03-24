@@ -32,7 +32,7 @@ function ShortenPage() {
         }),
       });
 
-      const newUrl = `http://localhost:5000/api/${data.short_code}`;
+      const newUrl = `${API}/${data.short_code}`;
       setShortUrl(newUrl);
       setCopied(false);
       setShowModal(true);

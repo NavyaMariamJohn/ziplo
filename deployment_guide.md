@@ -44,7 +44,7 @@ You can use **Render's Managed PostgreSQL** for a seamless experience.
     *   **Framework Preset**: **Vite**
 5.  Add **Environment Variables**:
     *   `VITE_API_URL`: (Paste your Render Backend URL + `/api`)
-        *   Example: `https://ziplo-backend.onrender.com/api`
+        *   Example: `https://ziplo-backend.der.com/api`
 6.  Click **Deploy**.
 
 ---

@@ -13,7 +13,7 @@ function LinkCard({ link, refreshUrls }) {
 
   // 🔗 COPY
   const handleCopy = () => {
-    const url = `http://localhost:5000/api/${link.short_code}`;
+    const url = `${API}/${link.short_code}`;
     navigator.clipboard.writeText(url);
     toast.success("Copied!");
   };
