@@ -20,12 +20,8 @@ function AnalyticsOverview() {
 
   // 🔹 FETCH OVERVIEW DATA
   const fetchOverview = async () => {
-    const token = localStorage.getItem("token");
-
     try {
-      const res = await fetchWithAuth("/analytics-overview");
-
-      const result = await res.json();
+      const result = await fetchWithAuth("/analytics-overview");
       setData(result);
     } catch (err) {
       console.error(err);

@@ -16,27 +16,18 @@ function ManageLinksTable({ urls, loading, refreshUrls }) {
   };
 
   const handleDelete = async (id) => {
-    const token = localStorage.getItem("token");
-
     if (!window.confirm("Delete this link?")) return;
 
     try {
-      const res = await fetchWithAuth(`/delete-url/${id}`, {
+      await fetchWithAuth(`/delete-url/${id}`, {
         method: "DELETE",
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success("Deleted successfully");
-        refreshUrls(); // 🔄 reload data
-      } else {
-        toast.error(data.error || "Delete failed");
-      }
-
+      toast.success("Deleted successfully");
+      refreshUrls(); // 🔄 reload data
     } catch (err) {
       console.error(err);
-      toast.error("Server error");
+      toast.error(err.message || "Delete failed");
     }
   };
 

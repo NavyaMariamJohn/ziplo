@@ -18,7 +18,6 @@ function UserManagement() {
   const [page, setPage] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
   const [stats, setStats] = useState(null);
-  const [activeCard, setActiveCard] = useState("all");
 
   // 🔹 Fetch users (depends on filters)
   useEffect(() => {
@@ -33,12 +32,23 @@ function UserManagement() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetchWithAuth(
+      // ✅ Using server-side filtering + pagination
+      const data = await fetchWithAuth(
         `/admin/users?search=${search}&role=${role}&status=${status}&page=${page}`
       );
-      const data = await res.json();
 
-      setUsers(data.users || []);
+      // ✅ Merging User's Mapping logic
+      const mappedUsers = (data.users || []).map((u) => ({
+        id: u.id,
+        username: u.username || u.email,
+        email: u.email,
+        role: u.email === "navya@test.com" ? "admin" : (u.role || "user"),
+        is_active: u.is_active,
+        status: u.is_active ? "active" : "suspended",
+        linksCount: u.linksCount || 0,
+      }));
+
+      setUsers(mappedUsers);
       setTotalUsers(data.total || 0);
     } catch (err) {
       console.error("User fetch error:", err);
@@ -49,8 +59,7 @@ function UserManagement() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetchWithAuth("/admin/user-stats");
-      const data = await res.json();
+      const data = await fetchWithAuth("/admin/user-stats");
       setStats(data);
     } catch (err) {
       console.error("Stats fetch error:", err);
@@ -60,8 +69,6 @@ function UserManagement() {
   return (
     <DashboardLayout>
       <div className="admin-user-management">
-
-        {/* HEADER */}
         <header className="admin-header">
           <div className="title-group">
             <h1>User Management</h1>
@@ -71,60 +78,28 @@ function UserManagement() {
 
         {/* 🔥 STATS CARDS */}
         <div className="stats-grid">
+          <div className="stat-card" onClick={() => { setRole("all"); setStatus("all"); setPage(1); }}>
+            <p>Total Users</p>
+            <h2>{stats ? stats.total_users : "..."}</h2>
+          </div>
+          <div className="stat-card green" onClick={() => { setStatus("active"); setPage(1); }}>
+            <p>Active</p>
+            <h2>{stats ? stats.active_users : "..."}</h2>
+          </div>
+          <div className="stat-card red" onClick={() => { setStatus("suspended"); setPage(1); }}>
+            <p>Suspended</p>
+            <h2>{stats ? stats.suspended_users : "..."}</h2>
+          </div>
+          <div className="stat-card blue" onClick={() => { setRole("admin"); setPage(1); }}>
+            <p>Admins</p>
+            <h2>{stats ? stats.admin_users : "..."}</h2>
+          </div>
+          <div className="stat-card yellow">
+            <p>New (7 days)</p>
+            <h2>{stats ? stats.new_users : "..."}</h2>
+          </div>
+        </div>
 
-  <div 
-    className="stat-card"
-    onClick={() => {
-      setRole("all");
-      setStatus("all");
-      setPage(1);
-    }}
-  >
-    <p>Total Users</p>
-    <h2>{stats ? stats.total_users : "..."}</h2>
-  </div>
-
-  <div 
-    className="stat-card green"
-    onClick={() => {
-      setStatus("active");
-      setPage(1);
-    }}
-  >
-    <p>Active</p>
-    <h2>{stats ? stats.active_users : "..."}</h2>
-  </div>
-
-  <div 
-    className="stat-card red"
-    onClick={() => {
-      setStatus("suspended");
-      setPage(1);
-    }}
-  >
-    <p>Suspended</p>
-    <h2>{stats ? stats.suspended_users : "..."}</h2>
-  </div>
-
-  <div 
-    className="stat-card blue"
-    onClick={() => {
-      setRole("admin");
-      setPage(1);
-    }}
-  >
-    <p>Admins</p>
-    <h2>{stats ? stats.admin_users : "..."}</h2>
-  </div>
-
-  <div className="stat-card yellow">
-    <p>New (7 days)</p>
-    <h2>{stats ? stats.new_users : "..."}</h2>
-  </div>
-
-</div>
-
-        {/* FILTERS */}
         <UserFilters
           search={search}
           setSearch={setSearch}
@@ -134,7 +109,6 @@ function UserManagement() {
           setStatus={setStatus}
         />
 
-        {/* TABLE */}
         <div className="table-container shadow-sm">
           {loading ? (
             <div className="loading-state">
@@ -142,9 +116,16 @@ function UserManagement() {
             </div>
           ) : (
             <>
-              <UserTable users={users} />
+              {/* ✅ User's local filtering (as a safety layer) */}
+              <UserTable
+                users={users.filter((u) => {
+                  return (
+                    (role === "all" || u.role === role) &&
+                    (status === "all" || u.status === status)
+                  );
+                })}
+              />
 
-              {/* FOOTER */}
               <footer className="table-footer">
                 <div className="showing-text">
                   Showing {users.length > 0 ? (page - 1) * 10 + 1 : 0}-
@@ -152,47 +133,19 @@ function UserManagement() {
                 </div>
 
                 <div className="pagination">
-                  <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                  >
-                    ←
-                  </button>
-
+                  <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>←</button>
                   <span className="page-nums">
-                    <button
-                      className={page === 1 ? "active" : ""}
-                      onClick={() => setPage(1)}
-                    >
-                      1
-                    </button>
-
+                    <button className={page === 1 ? "active" : ""} onClick={() => setPage(1)}>1</button>
                     {page > 3 && <span>...</span>}
-
-                    {page !== 1 &&
-                      page !== Math.ceil(totalUsers / 10) && (
-                        <button className="active">{page}</button>
-                      )}
-
+                    {page !== 1 && page !== Math.ceil(totalUsers / 10) && (
+                      <button className="active">{page}</button>
+                    )}
                     {page < Math.ceil(totalUsers / 10) - 2 && <span>...</span>}
-
                     {totalUsers > 10 && (
-                      <button
-                        onClick={() =>
-                          setPage(Math.ceil(totalUsers / 10))
-                        }
-                      >
-                        {Math.ceil(totalUsers / 10)}
-                      </button>
+                      <button onClick={() => setPage(Math.ceil(totalUsers / 10))}>{Math.ceil(totalUsers / 10)}</button>
                     )}
                   </span>
-
-                  <button
-                    onClick={() => setPage((p) => p + 1)}
-                    disabled={page * 10 >= totalUsers}
-                  >
-                    →
-                  </button>
+                  <button onClick={() => setPage((p) => p + 1)} disabled={page * 10 >= totalUsers}>→</button>
                 </div>
               </footer>
             </>

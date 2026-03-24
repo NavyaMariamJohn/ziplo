@@ -59,7 +59,7 @@ It combines link management, tracking, and visualization into one clean interfac
 
 ### 🗄️ Database
 
-* MySQL
+* PostgreSQL
 
 ---
 

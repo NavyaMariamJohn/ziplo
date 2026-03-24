@@ -31,27 +31,18 @@ function LinksTable({ urls, loading, refreshUrls }) {
   };
 
   const confirmDelete = async () => {
-    const token = localStorage.getItem("token");
-
     try {
       setDeleting(true);
 
-      const res = await fetchWithAuth(`/delete-url/${selectedId}`, {
+      await fetchWithAuth(`/delete-url/${selectedId}`, {
         method: "DELETE",
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success("Deleted successfully");
-        refreshUrls();
-      } else {
-        toast.error(data.error || "Delete failed");
-      }
-
+      toast.success("Deleted successfully");
+      refreshUrls();
     } catch (err) {
       console.error(err);
-      toast.error("Server error");
+      toast.error(err.message || "Delete failed");
     } finally {
       setDeleting(false);
       setIsModalOpen(false);
@@ -61,34 +52,22 @@ function LinksTable({ urls, loading, refreshUrls }) {
 
   // 🔥 STATUS UPDATE
   const handleStatusChange = async (id, newStatus) => {
-    const token = localStorage.getItem("token");
-
     if (newStatus === "disabled") {
       const confirm = window.confirm("Are you sure you want to disable this link?");
       if (!confirm) return;
     }
 
     try {
-      const res = await fetchWithAuth(`/links/${id}/status`, {
+      await fetchWithAuth(`/links/${id}/status`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ status: newStatus }),
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success(`Link ${newStatus}`);
-        refreshUrls();
-      } else {
-        toast.error(data.error || "Failed to update status");
-      }
-
+      toast.success(`Link ${newStatus}`);
+      refreshUrls();
     } catch (err) {
       console.error(err);
-      toast.error("Server error");
+      toast.error(err.message || "Failed to update status");
     }
   };
 

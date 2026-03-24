@@ -33,26 +33,22 @@ function Settings() {
     setLoading(true);
 
     try {
-      const res1 = await fetchWithAuth("/update-profile", {
+      await fetchWithAuth("/update-profile", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       });
 
-      const res2 = await fetchWithAuth("/update-avatar", {
+      await fetchWithAuth("/update-avatar", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ avatar }),
       });
-
-      if (!res1.ok || !res2.ok) throw new Error();
 
       localStorage.setItem("userName", name);
       localStorage.setItem("avatar", avatar);
 
       toast.success("Profile updated!");
-    } catch {
-      toast.error("Error updating profile");
+    } catch (err) {
+      toast.error(err.message || "Error updating profile");
     } finally {
       setLoading(false);
     }
@@ -83,32 +79,18 @@ function Settings() {
     setPasswordLoading(true);
 
     try {
-      const res = await fetchWithAuth("/change-password", {
+      const data = await fetchWithAuth("/change-password", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentPassword, newPassword }),
       });
 
-      const data = await res.json();
-
-      if (res.status === 401) {
-        toast.error("Session expired. Please login again.");
-        localStorage.clear();
-        window.location.href = "/login";
-        return;
-      }
-
-      if (res.ok) {
-        toast.success(data.message || "Password updated");
-        setShowModal(false);
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-      } else {
-        toast.error(data.error || "Failed to update password");
-      }
-    } catch {
-      toast.error("Server error");
+      toast.success(data.message || "Password updated");
+      setShowModal(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      toast.error(err.message || "Failed to update password");
     } finally {
       setPasswordLoading(false);
     }
@@ -117,28 +99,15 @@ function Settings() {
   // 🔥 DELETE ACCOUNT (FIXED)
   const handleDelete = async () => {
     try {
-      const res = await fetchWithAuth("/delete-account", {
+      await fetchWithAuth("/delete-account", {
         method: "DELETE",
       });
 
-      const data = await res.json();
-
-      if (res.status === 401) {
-        toast.error("Session expired. Please login again.");
-        localStorage.clear();
-        window.location.href = "/login";
-        return;
-      }
-
-      if (res.ok) {
-        toast.success("Account deleted successfully");
-        localStorage.clear();
-        window.location.href = "/";
-      } else {
-        toast.error(data.error || "Failed to delete account");
-      }
-    } catch {
-      toast.error("Server error");
+      toast.success("Account deleted successfully");
+      localStorage.clear();
+      window.location.href = "/";
+    } catch (err) {
+      toast.error(err.message || "Server error");
     }
   };
 

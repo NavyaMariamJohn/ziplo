@@ -23,12 +23,8 @@ function MyLinks() {
 
   // 🔹 FETCH USER LINKS
   const fetchUrls = async () => {
-    const token = localStorage.getItem("token");
-
     try {
-      const res = await fetchWithAuth("/user-urls");
-
-      const data = await res.json();
+      const data = await fetchWithAuth("/user-urls");
       setUrls(data);
     } catch (err) {
       console.error(err);

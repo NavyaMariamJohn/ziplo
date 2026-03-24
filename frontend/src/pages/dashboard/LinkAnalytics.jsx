@@ -28,12 +28,8 @@ function Analytics() {
 
   // 🔹 FETCH LOCATION STATS
   const fetchLocationStats = async (shortCode) => {
-    const token = localStorage.getItem("token");
-
     try {
-      const res = await fetchWithAuth(`/location-clicks/${shortCode}`);
-
-      const data = await res.json();
+      const data = await fetchWithAuth(`/location-clicks/${shortCode}`);
       setLocationData(data);
     } catch (err) {
       console.error(err);
@@ -42,12 +38,8 @@ function Analytics() {
 
   // 🔹 FETCH USER URLS
   const fetchUrls = async () => {
-    const token = localStorage.getItem("token");
-
     try {
-      const res = await fetchWithAuth("/user-urls");
-
-      const data = await res.json();
+      const data = await fetchWithAuth("/user-urls");
       setUrls(data);
 
       if (id) {
@@ -72,12 +64,8 @@ function Analytics() {
 
   // 🔹 FETCH ANALYTICS
   const fetchAnalytics = async (shortCode) => {
-    const token = localStorage.getItem("token");
-
     try {
-      const res = await fetchWithAuth(`/analytics/${shortCode}`);
-
-      const data = await res.json();
+      const data = await fetchWithAuth(`/analytics/${shortCode}`);
       setAnalytics(data);
     } catch (err) {
       console.error(err);

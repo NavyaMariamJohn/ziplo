@@ -9,6 +9,7 @@ export const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
   
   const headers = {
+    "Content-Type": "application/json",
     ...options.headers,
     ...(token ? { Authorization: `Bearer ${token}` } : {})
   };
@@ -18,13 +19,25 @@ export const fetchWithAuth = async (endpoint, options = {}) => {
     headers,
   });
 
+  // Handle Unauthorized (401)
   if (response.status === 401) {
     localStorage.removeItem("token");
     window.location.href = "/login";
-    throw new Error("Unauthorized");
+    return;
   }
 
-  return response;
+  // Handle No Content (204)
+  if (response.status === 204) {
+    return null;
+  }
+
+  // Standard JSON extraction and Error handling
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || data.message || "Request failed");
+  }
+
+  return data;
 };
 
 export default API;

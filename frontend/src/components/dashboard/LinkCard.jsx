@@ -20,27 +20,18 @@ function LinkCard({ link, refreshUrls }) {
 
   // 🗑 DELETE
   const handleDelete = async () => {
-    const token = localStorage.getItem("token");
-
     try {
       setLoading(true);
 
-      const res = await fetchWithAuth(`/delete-url/${link.id}`, {
+      await fetchWithAuth(`/delete-url/${link.id}`, {
         method: "DELETE",
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success("Deleted successfully");
-        refreshUrls();
-      } else {
-        toast.error(data.error || "Delete failed");
-      }
-
+      toast.success("Deleted successfully");
+      refreshUrls();
     } catch (err) {
       console.error(err);
-      toast.error("Server error");
+      toast.error(err.message || "Delete failed");
     } finally {
       setLoading(false);
       setIsModalOpen(false);
@@ -49,34 +40,22 @@ function LinkCard({ link, refreshUrls }) {
 
   // 🔄 STATUS UPDATE
   const handleStatusChange = async (newStatus) => {
-    const token = localStorage.getItem("token");
-
     if (newStatus === "disabled") {
       const confirm = window.confirm("Are you sure you want to disable this link?");
       if (!confirm) return;
     }
 
     try {
-      const res = await fetchWithAuth(`/links/${link.id}/status`, {
+      await fetchWithAuth(`/links/${link.id}/status`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ status: newStatus }),
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success(`Link ${newStatus}`);
-        refreshUrls();
-      } else {
-        toast.error(data.error || "Failed to update status");
-      }
-
+      toast.success(`Link ${newStatus}`);
+      refreshUrls();
     } catch (err) {
       console.error(err);
-      toast.error("Server error");
+      toast.error(err.message || "Failed to update status");
     }
   };
 

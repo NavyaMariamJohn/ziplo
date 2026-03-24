@@ -21,8 +21,7 @@ function UserFilters({ search, setSearch, role, setRole, status, setStatus }) {
           <select value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="all">All</option>
             <option value="admin">Admin</option>
-            <option value="pro">Pro</option>
-            <option value="free">Free</option>
+            <option value="user">User</option>
           </select>
         </div>
 

@@ -24,13 +24,10 @@ function Dashboard() {
 
   // 🔹 FETCH
   const fetchUrls = async () => {
-    const token = localStorage.getItem("token");
     setLoadingUrls(true);
 
     try {
-      const res = await fetchWithAuth("/user-urls");
-
-      const data = await res.json();
+      const data = await fetchWithAuth("/user-urls");
       setUrls(data);
     } catch {
       toast.error("Failed to load links");
@@ -52,36 +49,26 @@ function Dashboard() {
       return;
     }
 
-    const token = localStorage.getItem("token");
     setLoading(true);
 
     try {
-      const res = await fetchWithAuth("/create-url", {
+      const data = await fetchWithAuth("/create-url", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ 
           original_url: newUrl,
           custom_code: customCode.trim()
         }),
       });
 
-      const data = await res.json();
+      const full = `http://localhost:5000/api/${data.short_code}`;
+      setCreatedShortUrl(full);
+      setNewUrl("");
+      setCustomCode("");
+      toast.success("Link created 🚀");
+      fetchUrls();
 
-      if (res.ok) {
-        const full = `http://localhost:5000/api/${data.short_code}`;
-        setCreatedShortUrl(full);
-        setNewUrl("");
-        setCustomCode("");
-        toast.success("Link created 🚀");
-        fetchUrls();
-      } else {
-        toast.error(data.error);
-      }
-
-    } catch {
-      toast.error("Server error");
+    } catch (err) {
+      toast.error(err.message || "Server error");
     } finally {
       setLoading(false);
     }

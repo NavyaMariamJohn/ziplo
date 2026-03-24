@@ -25,31 +25,22 @@ function ShortenPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetchWithAuth("/create-url", {
+      const data = await fetchWithAuth("/create-url", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
         body: JSON.stringify({
           original_url: longUrl,
         }),
       });
 
-      const data = await res.json();
+      const newUrl = `http://localhost:5000/api/${data.short_code}`;
+      setShortUrl(newUrl);
+      setCopied(false);
+      setShowModal(true);
 
-      if (res.ok) {
-        const newUrl = `http://localhost:5000/api/${data.short_code}`;
-        setShortUrl(newUrl);
-        setCopied(false);
-        setShowModal(true);
-
-        toast.success("Link shortened successfully 🎉");
-      } else {
-        toast.error(data.error || "Failed to shorten URL");
-      }
+      toast.success("Link shortened successfully 🎉");
     } catch (err) {
       console.error(err);
-      toast.error("Server error");
+      toast.error(err.message || "Failed to shorten URL");
     } finally {
       setIsLoading(false);
     }

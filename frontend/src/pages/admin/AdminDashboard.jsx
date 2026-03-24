@@ -69,11 +69,11 @@ function AdminDashboard() {
 
     const load = async () => {
       try {
-        const usersRes = await fetchWithAuth("/admin/users");
-        const urlsRes = await fetchWithAuth("/admin/urls");
+        const usersData = await fetchWithAuth("/admin/users");
+        const urlsData = await fetchWithAuth("/admin/urls");
 
-        setUsers(await usersRes.json());
-        setUrls(await urlsRes.json());
+        setUsers(usersData.users || usersData); // Support multi-format
+        setUrls(urlsData);
       } catch {
         toast.error("Failed to load admin data");
       } finally {
