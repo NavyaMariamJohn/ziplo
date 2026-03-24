@@ -41,6 +41,17 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 # ================================
 # HEALTH CHECK
 # ================================
+# ================================
+# HEALTH CHECK + UPTIME
+# ================================
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({
+        "status": "Ziplo API is running",
+        "uptime_monitored": True
+    }), 200
+
+
 @app.route("/health", methods=["GET"])
 def health_check():
     return {
