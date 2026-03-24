@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../layout/DashboardLayout";
 import LinkCard from "../../components/dashboard/LinkCard";
-import API, { fetchWithAuth } from "../../utils/api";
+import { fetchWithAuth } from "../../utils/api";
 import toast from "react-hot-toast";
 import "./MyLinks.css";
 
