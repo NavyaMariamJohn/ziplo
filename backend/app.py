@@ -77,22 +77,37 @@ def redirect_url(short_code):
     # Take the first IP if it's a list
     ip = ip_header.split(',')[0].strip() if ip_header else "127.0.0.1"
 
-    # 🔹 Safe geolocation
+    # 🔹 Safe geolocation (Multi-provider fallback 🔥)
     location = "Unknown"
     
     if ip in ["127.0.0.1", "localhost", "::1"]:
         location = "Local Test"
     else:
+        # Try Provider 1: ipapi.co
         try:
-            geo = requests.get(
+            geo_resp = requests.get(
                 f"https://ipapi.co/{ip}/json/",
                 timeout=2,
                 headers={'User-Agent': 'Ziplo-URL-Shortener'}
-            ).json()
-            location = geo.get("country_name", "Unknown")
-        except Exception as e:
-            print(f"Geo Error: {e}")
+            )
+            if geo_resp.status_code == 200:
+                geo_data = geo_resp.json()
+                location = geo_data.get("country_name", "Unknown")
+        except:
             location = "Unknown"
+
+        # Try Provider 2: ip-api.com (Fallback)
+        if location == "Unknown":
+            try:
+                geo_resp = requests.get(
+                    f"http://ip-api.com/json/{ip}",
+                    timeout=2
+                )
+                if geo_resp.status_code == 200:
+                    geo_data = geo_resp.json()
+                    location = geo_data.get("country", "Unknown")
+            except:
+                pass
 
     try:
         conn = get_db_connection()
