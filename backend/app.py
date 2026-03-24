@@ -39,6 +39,24 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 
 # ================================
+# HEALTH CHECK
+# ================================
+@app.route("/health", methods=["GET"])
+def health_check():
+    return {
+        "status": "Server is running",
+        "service": "ZIPLO URL Shortener API"
+    }, 200
+
+
+# Register routes
+app.register_blueprint(auth_bp)
+app.register_blueprint(url_bp)
+app.register_blueprint(analytics_bp)
+app.register_blueprint(admin_bp)
+
+
+# ================================
 # ROOT REDIRECTION + ANALYTICS (PROFESSIONAL CLEAN URLS 🔥)
 # ================================
 @app.route("/<short_code>", methods=["GET"])
@@ -92,22 +110,6 @@ def redirect_url(short_code):
         return jsonify({"error": str(e)}), 400
 
 
-# ================================
-# HEALTH CHECK
-# ================================
-@app.route("/health", methods=["GET"])
-def health_check():
-    return {
-        "status": "Server is running",
-        "service": "ZIPLO URL Shortener API"
-    }, 200
-
-
-# Register routes
-app.register_blueprint(auth_bp)
-app.register_blueprint(url_bp)
-app.register_blueprint(analytics_bp)
-app.register_blueprint(admin_bp)
 
 
 # Run server

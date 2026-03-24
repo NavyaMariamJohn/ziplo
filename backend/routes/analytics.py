@@ -88,7 +88,7 @@ def get_analytics(short_code):
             {
                 "ip": row[0],
                 "location": row[1] or "Unknown",
-                "timestamp": str(row[2])
+                "timestamp": row[2].isoformat() + "Z" if hasattr(row[2], "isoformat") else str(row[2])
             }
             for row in rows
         ]
@@ -109,7 +109,7 @@ def get_analytics(short_code):
 
         click_trend = [
             {
-                "date": str(row[0]),
+                "date": row[0].isoformat() if hasattr(row[0], "isoformat") else str(row[0]),
                 "clicks": row[1]
             }
             for row in trend_rows
@@ -328,7 +328,7 @@ def analytics_overview():
         for d in days:
             key = str(d)
             trend.append({
-                "date": key,
+                "date": key,  # Already a string ISO YYYY-MM-DD
                 "clicks": trend_map.get(key, 0)
             })
 

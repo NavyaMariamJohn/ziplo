@@ -61,7 +61,7 @@ function LinkCard({ link, refreshUrls }) {
 
   // 📅 DATE
   const formattedDate = link.created_at
-    ? new Date(link.created_at).toLocaleDateString()
+    ? new Date(link.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })
     : "No Date";
 
   return (

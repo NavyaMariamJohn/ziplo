@@ -3,6 +3,7 @@ import requests
 from config import get_db_connection
 from utils.jwt_helper import get_user_from_token, is_admin
 from utils.shortener import generate_short_code
+from datetime import datetime
 
 url_bp = Blueprint("url", __name__, url_prefix="/api")
 
@@ -130,7 +131,7 @@ def get_user_urls():
                 "id": row[0],
                 "original_url": row[1],
                 "short_code": row[2],
-                "created_at": row[3],
+                "created_at": row[3].isoformat() + "Z" if hasattr(row[3], "isoformat") else str(row[3]),
                 "status": row[4],
                 "click_count": row[5]
             })
@@ -237,7 +238,7 @@ def get_all_urls():
                 "status": row[3],
                 "created_by": row[4],
                 "click_count": row[5],
-                "created_at": str(row[6]) if len(row) > 6 else None
+                "created_at": row[6].isoformat() + "Z" if hasattr(row[6], "isoformat") else str(row[6])
             })
 
         cursor.close()
