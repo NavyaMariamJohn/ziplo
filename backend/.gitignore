@@ -1,0 +1,32 @@
+# =========================
+# BACKEND (PYTHON)
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+.env.*
+*.sqlite3
+
+# =========================
+# FRONTEND (REACT / VITE)
+# =========================
+node_modules/
+dist/
+build/
+.env
+.env.local
+
+# =========================
+# GENERAL
+# =========================
+.DS_Store
+Thumbs.db
+*.log
+*.zip
+*.tar.gz
+*.rar
+.idea/
+.vscode/
