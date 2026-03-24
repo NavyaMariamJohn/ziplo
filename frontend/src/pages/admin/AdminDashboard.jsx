@@ -55,7 +55,9 @@ function timeAgo(dateString) {
 }
 
 function AdminDashboard() {
-  const [trend, setTrend] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [urls, setUrls] = useState([]);
+  const [stats, setStats] = useState(null);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -66,15 +68,17 @@ function AdminDashboard() {
 
     const load = async () => {
       try {
-        const [usersData, urlsData, trendData] = await Promise.all([
+        const [usersData, urlsData, trendData, statsData] = await Promise.all([
           fetchWithAuth("/admin/users"),
           fetchWithAuth("/admin/urls"),
-          fetchWithAuth("/admin/signup-trend")
+          fetchWithAuth("/admin/signup-trend"),
+          fetchWithAuth("/admin/user-stats")
         ]);
 
         setUsers(usersData.users || usersData);
         setUrls(urlsData);
         setTrend(trendData);
+        setStats(statsData);
       } catch {
         toast.error("Failed to load admin data");
       } finally {
@@ -85,16 +89,14 @@ function AdminDashboard() {
     load();
   }, []);
 
-  /* 🔥 STATS */
-  const totalUsers = users.length;
+  /* 🔥 STATS (Now using absolute totals from stats API) */
+  const totalUsers = stats ? stats.total_users : 0;
   const totalLinks = urls.length;
   const totalClicks = urls.reduce(
     (sum, u) => sum + (u.click_count || 0),
     0
   );
-  const activeUsers = users.filter(
-    (u) => u.role !== "inactive"
-  ).length;
+  const activeUsers = stats ? stats.active_users : 0;
 
   // Chart data: Signups for the last 7 days
   const chartData = [];
