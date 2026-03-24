@@ -3,7 +3,11 @@
  * @description Utility module: api. Provides helper functions used throughout the application.
  */
 
-export const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// 🌐 ROOT_URL: Used for generating short links (e.g., https://ziplo.in)
+export const ROOT_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/api$/, "").replace(/\/$/, "");
+
+// 🛠️ API: Used for data-fetching (e.g., https://ziplo.in/api)
+export const API = `${ROOT_URL}/api`;
 
 export const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");

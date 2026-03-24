@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Footer from '../../layout/Footer';
-import API, { fetchWithAuth } from "../../utils/api";
+import { fetchWithAuth, ROOT_URL } from "../../utils/api";
 import toast from "react-hot-toast";
 import './ShortenPage.css';
 
@@ -32,7 +32,7 @@ function ShortenPage() {
         }),
       });
 
-      const newUrl = `${API}/${data.short_code}`;
+      const newUrl = `${ROOT_URL}/${data.short_code}`;
       setShortUrl(newUrl);
       setCopied(false);
       setShowModal(true);

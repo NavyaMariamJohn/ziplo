@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LinkCard.css";
 import toast from "react-hot-toast";
-import API, { fetchWithAuth } from "../../utils/api";
+import { fetchWithAuth, ROOT_URL } from "../../utils/api";
 import ConfirmModal from "../ui/ConfirmModal";
 
 function LinkCard({ link, refreshUrls }) {
@@ -13,7 +13,7 @@ function LinkCard({ link, refreshUrls }) {
 
   // 🔗 COPY
   const handleCopy = () => {
-    const url = `${API}/${link.short_code}`;
+    const url = `${ROOT_URL}/${link.short_code}`;
     navigator.clipboard.writeText(url);
     toast.success("Copied!");
   };
