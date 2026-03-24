@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import DashboardLayout from '../../layout/DashboardLayout';
 import StatCard from '../../components/dashboard/StatCard';
 import LinksTable from '../../components/dashboard/LinksTable';
-import { fetchWithAuth, API, BASE_URL } from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 import toast from "react-hot-toast";
 import './Dashboard.css';
 
@@ -60,7 +60,7 @@ function Dashboard() {
         }),
       });
 
-      const full = `${BASE_URL}/${data.short_code}`;
+      const full = `${API}/${data.short_code}`;
       setCreatedShortUrl(full);
       setNewUrl("");
       setCustomCode("");

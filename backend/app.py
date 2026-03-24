@@ -1,9 +1,7 @@
-from flask import Flask, request, redirect, jsonify
+from flask import Flask
 from flask_cors import CORS
 from flask_mail import Mail
 import os
-import requests
-from config import get_db_connection
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -36,60 +34,6 @@ CORS(app, resources={r"/*": {
 
 # Secret key from .env
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-
-
-# ================================
-# ROOT REDIRECTION + ANALYTICS (CLEAN URLS 🔥)
-# ================================
-@app.route("/<short_code>", methods=["GET"])
-def redirect_url(short_code):
-    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
-
-    # 🔹 Safe geolocation
-    try:
-        geo = requests.get(
-            f"https://ipapi.co/{ip}/json/",
-            timeout=2
-        ).json()
-        location = geo.get("country_name", "Unknown")
-    except:
-        location = "Unknown"
-
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
-            "SELECT id, original_url, status FROM urls WHERE short_code = %s",
-            (short_code,)
-        )
-
-        row = cursor.fetchone()
-
-        if not row:
-            return "Short URL not found", 404
-
-        url_id = row[0]
-        original_url = row[1]
-        status = row[2]
-        
-        if status != "active":
-            return "This URL is not active", 403
-
-        # 🔥 Log click
-        cursor.execute(
-            "INSERT INTO clicks (url_id, ip_address, location) VALUES (%s, %s, %s)",
-            (url_id, ip, location)
-        )
-
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        return redirect(original_url)
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
 
 
 # ================================

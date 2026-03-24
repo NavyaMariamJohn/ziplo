@@ -5,12 +5,12 @@
 
 import "./LinksTable.css";
 import toast from "react-hot-toast";
-import { fetchWithAuth, BASE_URL } from "../../utils/api";
+import API, { fetchWithAuth } from "../../utils/api";
 
 function ManageLinksTable({ urls, loading, refreshUrls }) {
 
   const handleCopy = (shortCode) => {
-    const fullUrl = `${BASE_URL}/${shortCode}`;
+    const fullUrl = `${API}/${shortCode}`;
     navigator.clipboard.writeText(fullUrl);
     toast.success("Copied!");
   };
@@ -74,7 +74,7 @@ function ManageLinksTable({ urls, loading, refreshUrls }) {
                   {/* SHORT */}
                   <td>
                     <a
-                      href={`${BASE_URL}/${item.short_code}`}
+                      href={`${API}/${item.short_code}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="short-link"
