@@ -25,7 +25,12 @@ app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
 
 mail = Mail(app)
 # Enable CORS
-CORS(app, resources={r"/*": {"origins": "*"}})
+# Enable CORS with explicit support for preflight and custom headers
+CORS(app, resources={r"/*": {
+    "origins": "*",
+    "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
+}})
 
 # Secret key from .env
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
