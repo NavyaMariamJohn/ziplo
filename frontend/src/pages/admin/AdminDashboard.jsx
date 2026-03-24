@@ -95,22 +95,29 @@ function AdminDashboard() {
     (u) => u.role !== "inactive"
   ).length;
 
-  // Chart data: Signups per day
-  const signupsMap = {};
+  // Chart data: Signups for the last 7 days (guaranteed 7 days)
+  const chartData = [];
+  const now = new Date();
+  
+  // 1. Pre-generate last 7 days with 0 counts
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(now.getDate() - i);
+    const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    chartData.push({ name: dateStr, signups: 0, fullDate: d.toDateString() });
+  }
+
+  // 2. Fill with actual data
   users.forEach(u => {
     if (u.created_at) {
       const d = new Date(u.created_at);
       if (!isNaN(d)) {
-        const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-        signupsMap[dateStr] = (signupsMap[dateStr] || 0) + 1;
+        const dateStr = d.toDateString();
+        const entry = chartData.find(c => c.fullDate === dateStr);
+        if (entry) entry.signups += 1;
       }
     }
   });
-
-  const chartData = Object.keys(signupsMap).slice(-7).map(date => ({
-    name: date,
-    signups: signupsMap[date]
-  }));
 
   // Activity Feed
   let activities = [];
