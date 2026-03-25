@@ -104,33 +104,45 @@ def get_all_users():
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # 🔹 Build Query
-        query = "SELECT id, username, email, role, created_at, last_login, is_active FROM users WHERE 1=1"
+        # 🔹 Build Query Conditions
+        conditions = ["1=1"]
         params = []
 
         if search:
-            query += " AND (username ILIKE %s OR email ILIKE %s)"
+            conditions.append("(u.username ILIKE %s OR u.email ILIKE %s)")
             params.extend([f"%{search}%", f"%{search}%"])
 
         if role != 'all':
-            query += " AND role = %s"
+            conditions.append("u.role = %s")
             params.append(role)
 
         if status_filter != 'all':
             is_active = (status_filter == 'active')
-            query += " AND is_active = %s"
+            conditions.append("u.is_active = %s")
             params.append(is_active)
 
+        where_clause = " AND ".join(conditions)
+
         # 🔹 Get Total Count (before pagination)
-        count_query = f"SELECT COUNT(*) FROM ({query}) AS filtered_users"
+        count_query = f"SELECT COUNT(*) FROM users u WHERE {where_clause}"
         cur.execute(count_query, params)
         total = cur.fetchone()[0]
 
         # 🔹 Apply Pagination & Sorting
-        query += " ORDER BY created_at DESC LIMIT %s OFFSET %s"
-        params.extend([per_page, offset])
-
-        cur.execute(query, params)
+        query = f"""
+            SELECT 
+                u.id, u.username, u.email, u.role, u.created_at, u.last_login, u.is_active,
+                COUNT(urls.id) as links_count
+            FROM users u
+            LEFT JOIN urls ON u.id = urls.user_id
+            WHERE {where_clause}
+            GROUP BY u.id
+            ORDER BY u.created_at DESC LIMIT %s OFFSET %s
+        """
+        
+        query_params = params + [per_page, offset]
+        
+        cur.execute(query, query_params)
         rows = cur.fetchall()
         
         users = []
@@ -142,7 +154,8 @@ def get_all_users():
                 "role": row[3],
                 "created_at": str(row[4]),
                 "last_login": str(row[5]) if row[5] else None,
-                "is_active": row[6]
+                "is_active": row[6],
+                "linksCount": row[7]
             })
 
         cur.close()
