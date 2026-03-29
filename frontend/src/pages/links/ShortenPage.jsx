@@ -17,6 +17,7 @@ function ShortenPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [expiresAt, setExpiresAt] = useState('');
 
   const handleShorten = async (e) => {
     e.preventDefault();
@@ -29,6 +30,7 @@ function ShortenPage() {
         method: "POST",
         body: JSON.stringify({
           original_url: longUrl,
+          expires_at: expiresAt ? new Date(expiresAt).toISOString() : null,
         }),
       });
 
@@ -73,6 +75,16 @@ function ShortenPage() {
               value={longUrl}
               onChange={(e) => setLongUrl(e.target.value)}
               required
+            />
+            
+            <input
+              type="datetime-local"
+              className="url-input"
+              placeholder="Expiration Date (Optional)"
+              title="Set an expiration date for your link (Optional)"
+              value={expiresAt}
+              onChange={(e) => setExpiresAt(e.target.value)}
+              style={{ marginTop: '10px' }}
             />
 
             <button

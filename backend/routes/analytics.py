@@ -210,6 +210,51 @@ def location_clicks(short_code):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+# ================================
+# OS STATS
+# ================================
+@analytics_bp.route("/os-clicks/<short_code>", methods=["GET"])
+def os_clicks(short_code):
+    user_id, error, status = get_user_from_token()
+    if error: return error, status
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM urls WHERE short_code = %s AND user_id = %s", (short_code, user_id))
+        url = cursor.fetchone()
+        if not url: return jsonify({"error": "URL not found"}), 404
+        url_id = url[0]
+        cursor.execute("SELECT os, COUNT(*) FROM clicks WHERE url_id = %s GROUP BY os", (url_id,))
+        rows = cursor.fetchall()
+        data = [{"os": row[0] or "Unknown", "clicks": row[1]} for row in rows]
+        cursor.close()
+        conn.close()
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+# ================================
+# BROWSER STATS
+# ================================
+@analytics_bp.route("/browser-clicks/<short_code>", methods=["GET"])
+def browser_clicks(short_code):
+    user_id, error, status = get_user_from_token()
+    if error: return error, status
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM urls WHERE short_code = %s AND user_id = %s", (short_code, user_id))
+        url = cursor.fetchone()
+        if not url: return jsonify({"error": "URL not found"}), 404
+        url_id = url[0]
+        cursor.execute("SELECT browser, COUNT(*) FROM clicks WHERE url_id = %s GROUP BY browser", (url_id,))
+        rows = cursor.fetchall()
+        data = [{"browser": row[0] or "Unknown", "clicks": row[1]} for row in rows]
+        cursor.close()
+        conn.close()
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
     
 @analytics_bp.route("/admin/analytics", methods=["GET"])
 def system_analytics():

@@ -82,6 +82,10 @@ def redirect_url(short_code):
     city = "Unknown"
     region = "Unknown"
     
+    # 🔹 User-Agent OS/Browser
+    os_name = request.user_agent.platform or "Unknown"
+    browser = request.user_agent.browser or "Unknown"
+    
     if ip in ["127.0.0.1", "localhost", "::1"]:
         location = "Local Test"
         city = "Local Test"
@@ -118,7 +122,7 @@ def redirect_url(short_code):
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT id, original_url, status FROM urls WHERE short_code = %s",
+            "SELECT id, original_url, status, expires_at FROM urls WHERE short_code = %s",
             (short_code,)
         )
 
@@ -130,14 +134,19 @@ def redirect_url(short_code):
         url_id = row[0]
         original_url = row[1]
         status = row[2]
+        expires_at = row[3]
         
         if status != "active":
             return "This URL is not active", 403
+            
+        from datetime import datetime
+        if expires_at and datetime.utcnow() > expires_at:
+            return "This URL has expired", 410
 
         # 🔥 Log click
         cursor.execute(
-            "INSERT INTO clicks (url_id, ip_address, location, city, region) VALUES (%s, %s, %s, %s, %s)",
-            (url_id, ip, location, city, region)
+            "INSERT INTO clicks (url_id, ip_address, location, city, region, os, browser) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (url_id, ip, location, city, region, os_name, browser)
         )
 
         conn.commit()

@@ -15,6 +15,7 @@ function Dashboard() {
 
   const [newUrl, setNewUrl] = useState("");
   const [customCode, setCustomCode] = useState("");
+  const [expiresAt, setExpiresAt] = useState("");
   const [loading, setLoading] = useState(false);
   const [createdShortUrl, setCreatedShortUrl] = useState("");
   const [urls, setUrls] = useState([]);
@@ -56,7 +57,8 @@ function Dashboard() {
         method: "POST",
         body: JSON.stringify({ 
           original_url: newUrl,
-          custom_code: customCode.trim()
+          custom_code: customCode.trim(),
+          expires_at: expiresAt ? new Date(expiresAt).toISOString() : null
         }),
       });
 
@@ -64,6 +66,7 @@ function Dashboard() {
       setCreatedShortUrl(full);
       setNewUrl("");
       setCustomCode("");
+      setExpiresAt("");
       toast.success("Link created 🚀");
       fetchUrls();
 
@@ -114,6 +117,14 @@ function Dashboard() {
                 placeholder="Custom name (optional)"
                 value={customCode}
                 onChange={(e) => setCustomCode(e.target.value)}
+              />
+
+              <input
+                type="datetime-local"
+                className="custom-code-input"
+                title="Optional Expiration Date"
+                value={expiresAt}
+                onChange={(e) => setExpiresAt(e.target.value)}
               />
 
               <button onClick={handleCreate} disabled={loading}>

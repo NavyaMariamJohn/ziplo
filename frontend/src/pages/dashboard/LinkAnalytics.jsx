@@ -25,12 +25,34 @@ function Analytics() {
   const [selectedCode, setSelectedCode] = useState("");
   const [analytics, setAnalytics] = useState(null);
   const [locationData, setLocationData] = useState([]);
+  const [osData, setOsData] = useState([]);
+  const [browserData, setBrowserData] = useState([]);
 
   // 🔹 FETCH LOCATION STATS
   const fetchLocationStats = async (shortCode) => {
     try {
       const data = await fetchWithAuth(`/location-clicks/${shortCode}`);
       setLocationData(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // 🔹 FETCH OS STATS
+  const fetchOsStats = async (shortCode) => {
+    try {
+      const data = await fetchWithAuth(`/os-clicks/${shortCode}`);
+      setOsData(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // 🔹 FETCH BROWSER STATS
+  const fetchBrowserStats = async (shortCode) => {
+    try {
+      const data = await fetchWithAuth(`/browser-clicks/${shortCode}`);
+      setBrowserData(data);
     } catch (err) {
       console.error(err);
     }
@@ -49,12 +71,16 @@ function Analytics() {
           setSelectedCode(code);
           fetchAnalytics(code);
           fetchLocationStats(code);
+          fetchOsStats(code);
+          fetchBrowserStats(code);
         }
       } else if (data.length > 0) {
         const code = data[0].short_code;
         setSelectedCode(code);
         fetchAnalytics(code);
         fetchLocationStats(code);
+        fetchOsStats(code);
+        fetchBrowserStats(code);
       }
 
     } catch (err) {
@@ -109,6 +135,8 @@ function Analytics() {
               setSelectedCode(code);
               fetchAnalytics(code);
               fetchLocationStats(code);
+              fetchOsStats(code);
+              fetchBrowserStats(code);
             }}
           >
             <option value="">Select a link</option>
@@ -235,6 +263,57 @@ function Analytics() {
             </div>
           </div>
         )}
+
+        {/* 💻 OS & BROWSER PIE CHARTS */}
+        <div className="analytics-cards" style={{ display: 'flex', gap: '20px', marginTop: '20px' }}>
+          {osData.length > 0 && (
+            <div className="analytics-chart-card" style={{ flex: 1, margin: 0 }}>
+              <h3 className="chart-title">Clicks by OS</h3>
+              <div className="chart-wrapper">
+                <ResponsiveContainer width="100%" height="100%" debounce={200}>
+                  <PieChart>
+                    <Pie
+                      data={osData}
+                      dataKey="clicks"
+                      nameKey="os"
+                      outerRadius={90}
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                    >
+                      {osData.map((_, index) => (
+                        <Cell key={index} fill={["#4f46e5", "#818cf8", "#c7d2fe", "#e0e7ff"][index % 4]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(v, n) => [`${v} clicks`, n]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+
+          {browserData.length > 0 && (
+            <div className="analytics-chart-card" style={{ flex: 1, margin: 0 }}>
+              <h3 className="chart-title">Clicks by Browser</h3>
+              <div className="chart-wrapper">
+                <ResponsiveContainer width="100%" height="100%" debounce={200}>
+                  <PieChart>
+                    <Pie
+                      data={browserData}
+                      dataKey="clicks"
+                      nameKey="browser"
+                      outerRadius={90}
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                    >
+                      {browserData.map((_, index) => (
+                        <Cell key={index} fill={["#10b981", "#34d399", "#6ee7b7", "#a7f3d0"][index % 4]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(v, n) => [`${v} clicks`, n]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* TABLE */}
         <div className="analytics-table">
