@@ -158,6 +158,7 @@ def redirect_url(short_code):
 
         # 🔥 Password Check
         if password_hash:
+            from flask import render_template
             if request.method == "GET":
                 return render_template("password_prompt.html", short_code=short_code, error=None)
             
