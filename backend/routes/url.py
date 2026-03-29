@@ -116,11 +116,12 @@ def get_user_urls():
                 u.short_code,
                 u.created_at,
                 u.status,
+                u.expires_at,
                 COUNT(c.id) AS click_count
             FROM urls u
             LEFT JOIN clicks c ON u.id = c.url_id
             WHERE u.user_id = %s
-            GROUP BY u.id, u.original_url, u.short_code, u.created_at, u.status
+            GROUP BY u.id, u.original_url, u.short_code, u.created_at, u.status, u.expires_at
             ORDER BY u.id DESC
         """, (user_id,))
 
@@ -128,13 +129,18 @@ def get_user_urls():
 
         urls = []
         for row in rows:
+            expires_at = row[5]
+            status = row[4]
+            if expires_at and datetime.utcnow() > expires_at:
+                status = "expired"
+
             urls.append({
                 "id": row[0],
                 "original_url": row[1],
                 "short_code": row[2],
                 "created_at": row[3].isoformat() + "Z" if hasattr(row[3], "isoformat") else str(row[3]),
-                "status": row[4],
-                "click_count": row[5]
+                "status": status,
+                "click_count": row[6]
             })
 
         cursor.close()
@@ -220,26 +226,32 @@ def get_all_urls():
                 u.short_code,
                 u.status,
                 users.username,
+                u.expires_at,
                 COUNT(c.id) AS click_count,
                 MIN(u.created_at) AS created_at
             FROM urls u
             LEFT JOIN users ON u.user_id = users.id
             LEFT JOIN clicks c ON u.id = c.url_id
-            GROUP BY u.id, users.username
+            GROUP BY u.id, users.username, u.expires_at
         """)
 
         rows = cursor.fetchall()
 
         urls = []
         for row in rows:
+            expires_at = row[5]
+            status = row[3]
+            if expires_at and datetime.utcnow() > expires_at:
+                status = "expired"
+
             urls.append({
                 "id": row[0],
                 "original_url": row[1],
                 "short_code": row[2],
-                "status": row[3],
+                "status": status,
                 "created_by": row[4],
-                "click_count": row[5],
-                "created_at": row[6].isoformat() + "Z" if hasattr(row[6], "isoformat") else str(row[6])
+                "click_count": row[6],
+                "created_at": row[7].isoformat() + "Z" if hasattr(row[7], "isoformat") else str(row[7])
             })
 
         cursor.close()

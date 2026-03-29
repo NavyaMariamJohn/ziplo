@@ -83,8 +83,20 @@ def redirect_url(short_code):
     region = "Unknown"
     
     # 🔹 User-Agent OS/Browser
-    os_name = request.user_agent.platform or "Unknown"
-    browser = request.user_agent.browser or "Unknown"
+    ua_string = request.headers.get('User-Agent', '').lower()
+    
+    if 'windows' in ua_string: os_name = 'Windows'
+    elif 'iphone' in ua_string or 'ipad' in ua_string: os_name = 'iOS'
+    elif 'mac' in ua_string: os_name = 'macOS'
+    elif 'android' in ua_string: os_name = 'Android'
+    elif 'linux' in ua_string: os_name = 'Linux'
+    else: os_name = 'Other'
+        
+    if 'edg' in ua_string: browser = 'Edge'
+    elif 'chrome' in ua_string: browser = 'Chrome'
+    elif 'safari' in ua_string and 'chrome' not in ua_string: browser = 'Safari'
+    elif 'firefox' in ua_string: browser = 'Firefox'
+    else: browser = 'Other'
     
     if ip in ["127.0.0.1", "localhost", "::1"]:
         location = "Local Test"
