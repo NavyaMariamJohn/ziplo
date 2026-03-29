@@ -23,7 +23,7 @@ function UserTable({ users = [] }) {
         <p className="empty">No users found</p>
       ) : (
         users.map((user) => (
-          <UserRow key={user._id} user={user} />
+          <UserRow key={user.id} user={user} />
         ))
       )}
 

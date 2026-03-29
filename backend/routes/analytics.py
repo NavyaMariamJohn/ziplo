@@ -76,7 +76,7 @@ def get_analytics(short_code):
         # 📋 CLICK DETAILS
         # ================================
         cursor.execute("""
-            SELECT ip_address, location, timestamp 
+            SELECT ip_address, location, city, region, timestamp 
             FROM clicks 
             WHERE url_id = %s 
             ORDER BY timestamp DESC
@@ -84,14 +84,26 @@ def get_analytics(short_code):
 
         rows = cursor.fetchall()
 
-        click_details = [
-            {
+        click_details = []
+        for row in rows:
+            country = row[1] or "Unknown"
+            city = row[2] or "Unknown"
+            region = row[3] or "Unknown"
+            
+            loc_parts = []
+            if city != "Unknown" and city != "Local Test": loc_parts.append(city)
+            if region != "Unknown" and region != "Local Test": loc_parts.append(region)
+            if country != "Unknown" and country != "Local Test": loc_parts.append(country)
+            
+            full_location = ", ".join(loc_parts) if loc_parts else country
+            if not full_location: full_location = "Unknown"
+            if full_location == "Local Test": full_location = "Local Test"
+
+            click_details.append({
                 "ip": row[0],
-                "location": row[1] or "Unknown",
-                "timestamp": row[2].isoformat() + "Z" if hasattr(row[2], "isoformat") else str(row[2])
-            }
-            for row in rows
-        ]
+                "location": full_location,
+                "timestamp": row[4].isoformat() + "Z" if hasattr(row[4], "isoformat") else str(row[4])
+            })
 
         # ================================
         # 📈 CLICK TREND (FIXED POSITION)
@@ -163,21 +175,33 @@ def location_clicks(short_code):
 
         # 🔥 FILTERED QUERY (THIS WAS MISSING)
         cursor.execute("""
-            SELECT location, COUNT(*) 
+            SELECT city, region, location, COUNT(*) 
             FROM clicks 
             WHERE url_id = %s
-            GROUP BY location
+            GROUP BY city, region, location
         """, (url_id,))
 
         rows = cursor.fetchall()
 
-        data = [
-            {
-                "location": row[0] or "Unknown",
-                "clicks": row[1]
-            }
-            for row in rows
-        ]
+        data = []
+        for row in rows:
+            city = row[0] or "Unknown"
+            region = row[1] or "Unknown"
+            country = row[2] or "Unknown"
+            
+            loc_parts = []
+            if city != "Unknown" and city != "Local Test": loc_parts.append(city)
+            if region != "Unknown" and region != "Local Test": loc_parts.append(region)
+            if country != "Unknown" and country != "Local Test": loc_parts.append(country)
+            
+            full_location = ", ".join(loc_parts) if loc_parts else country
+            if not full_location: full_location = "Unknown"
+            if full_location == "Local Test": full_location = "Local Test"
+            
+            data.append({
+                "location": full_location,
+                "clicks": row[3]
+            })
 
         cursor.close()
         conn.close()
@@ -239,8 +263,6 @@ def system_analytics():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
-from flask import request  # add at top if not present
-from datetime import datetime, timedelta
 
 
 @analytics_bp.route("/analytics-overview", methods=["GET"])

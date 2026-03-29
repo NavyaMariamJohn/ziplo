@@ -42,7 +42,7 @@ function UserManagement() {
         id: u.id,
         username: u.username || u.email,
         email: u.email,
-        role: u.email === "navya@test.com" ? "admin" : (u.role || "user"),
+        role: u.role || "user",
         is_active: u.is_active,
         status: u.is_active ? "active" : "suspended",
         linksCount: u.linksCount || 0,

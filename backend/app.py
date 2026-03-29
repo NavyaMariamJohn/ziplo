@@ -79,15 +79,22 @@ def redirect_url(short_code):
 
     # 🔹 Safe geolocation
     location = "Unknown"
+    city = "Unknown"
+    region = "Unknown"
     
     if ip in ["127.0.0.1", "localhost", "::1"]:
         location = "Local Test"
+        city = "Local Test"
+        region = "Local Test"
     else:
         # 1. Primary: ip-api.com (more generous rate limits for servers)
         try:
             geo_resp = requests.get(f"http://ip-api.com/json/{ip}", timeout=2)
             if geo_resp.status_code == 200:
-                location = geo_resp.json().get("country", "Unknown")
+                geo_data = geo_resp.json()
+                location = geo_data.get("country", "Unknown")
+                city = geo_data.get("city", "Unknown")
+                region = geo_data.get("regionName", "Unknown")
         except:
             pass
 
@@ -100,6 +107,8 @@ def redirect_url(short_code):
                     headers={'User-Agent': 'Ziplo-URL-Shortener'}
                 ).json()
                 location = geo.get("country_name", "Unknown")
+                city = geo.get("city", "Unknown")
+                region = geo.get("region", "Unknown")
             except Exception as e:
                 print(f"Geo Error: {e}")
                 location = "Unknown"
@@ -127,8 +136,8 @@ def redirect_url(short_code):
 
         # 🔥 Log click
         cursor.execute(
-            "INSERT INTO clicks (url_id, ip_address, location) VALUES (%s, %s, %s)",
-            (url_id, ip, location)
+            "INSERT INTO clicks (url_id, ip_address, location, city, region) VALUES (%s, %s, %s, %s, %s)",
+            (url_id, ip, location, city, region)
         )
 
         conn.commit()
