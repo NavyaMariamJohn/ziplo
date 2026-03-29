@@ -70,7 +70,7 @@ app.register_blueprint(admin_bp)
 # ================================
 # ROOT REDIRECTION + ANALYTICS (PROFESSIONAL CLEAN URLS 🔥)
 # ================================
-@app.route("/<short_code>", methods=["GET"])
+@app.route("/<short_code>", methods=["GET", "POST"])
 def redirect_url(short_code):
     # 🕵️ Get Client IP (Handle proxies like Render/Vercel)
     ip_header = request.headers.get("X-Forwarded-For", request.remote_addr)
@@ -134,7 +134,7 @@ def redirect_url(short_code):
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT id, original_url, status, expires_at FROM urls WHERE short_code = %s",
+            "SELECT id, original_url, status, expires_at, password FROM urls WHERE short_code = %s",
             (short_code,)
         )
 
@@ -147,6 +147,7 @@ def redirect_url(short_code):
         original_url = row[1]
         status = row[2]
         expires_at = row[3]
+        password_hash = row[4]
         
         if status != "active":
             return "This URL is not active", 403
@@ -155,7 +156,18 @@ def redirect_url(short_code):
         if expires_at and datetime.utcnow() > expires_at:
             return "This URL has expired", 410
 
-        # 🔥 Log click
+        # 🔥 Password Check
+        if password_hash:
+            if request.method == "GET":
+                return render_template("password_prompt.html", short_code=short_code, error=None)
+            
+            if request.method == "POST":
+                from werkzeug.security import check_password_hash
+                submitted_password = request.form.get("password")
+                if not submitted_password or not check_password_hash(password_hash, submitted_password):
+                    return render_template("password_prompt.html", short_code=short_code, error="Incorrect password")
+        
+        # 🔥 Log click (only if GET w/o password XOR POST with correct password)
         cursor.execute(
             "INSERT INTO clicks (url_id, ip_address, location, city, region, os, browser) VALUES (%s, %s, %s, %s, %s, %s, %s)",
             (url_id, ip, location, city, region, os_name, browser)

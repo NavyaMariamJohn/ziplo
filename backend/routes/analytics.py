@@ -255,6 +255,35 @@ def browser_clicks(short_code):
         return jsonify(data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+# ================================
+# EXPORT CSV ANALYTICS
+# ================================
+@analytics_bp.route("/export-analytics/<short_code>", methods=["GET"])
+def export_analytics(short_code):
+    user_id, error, status = get_user_from_token()
+    if error: return error, status
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM urls WHERE short_code = %s AND user_id = %s", (short_code, user_id))
+        url = cursor.fetchone()
+        if not url: return jsonify({"error": "URL not found"}), 404
+        url_id = url[0]
+        
+        cursor.execute("SELECT ip_address, location, city, region, os, browser, timestamp FROM clicks WHERE url_id = %s ORDER BY timestamp DESC", (url_id,))
+        rows = cursor.fetchall()
+        
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['IP Address', 'Country', 'City', 'Region', 'OS', 'Browser', 'Timestamp'])
+        for row in rows:
+            writer.writerow([row[0], row[1], row[2], row[3], row[4], row[5], str(row[6])])
+            
+        output.seek(0)
+        return Response(output.getvalue(), mimetype="text/csv", headers={"Content-Disposition": f"attachment;filename=clicks_{short_code}.csv"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
     
 @analytics_bp.route("/admin/analytics", methods=["GET"])
 def system_analytics():

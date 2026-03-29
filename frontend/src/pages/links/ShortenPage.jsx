@@ -18,6 +18,7 @@ function ShortenPage() {
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [expiresAt, setExpiresAt] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleShorten = async (e) => {
     e.preventDefault();
@@ -31,6 +32,7 @@ function ShortenPage() {
         body: JSON.stringify({
           original_url: longUrl,
           expires_at: expiresAt ? new Date(expiresAt).toISOString() : null,
+          password: password.trim() || null,
         }),
       });
 
@@ -84,6 +86,16 @@ function ShortenPage() {
               title="Set an expiration date for your link (Optional)"
               value={expiresAt}
               onChange={(e) => setExpiresAt(e.target.value)}
+              style={{ marginTop: '10px' }}
+            />
+
+            <input
+              type="text"
+              className="url-input"
+              placeholder="Password Protect (Optional)"
+              title="Require a password to access this link"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               style={{ marginTop: '10px' }}
             />
 

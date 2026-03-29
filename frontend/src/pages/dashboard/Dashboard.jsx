@@ -16,6 +16,7 @@ function Dashboard() {
   const [newUrl, setNewUrl] = useState("");
   const [customCode, setCustomCode] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [createdShortUrl, setCreatedShortUrl] = useState("");
   const [urls, setUrls] = useState([]);
@@ -58,7 +59,8 @@ function Dashboard() {
         body: JSON.stringify({ 
           original_url: newUrl,
           custom_code: customCode.trim(),
-          expires_at: expiresAt ? new Date(expiresAt).toISOString() : null
+          expires_at: expiresAt ? new Date(expiresAt).toISOString() : null,
+          password: password.trim() || null
         }),
       });
 
@@ -67,6 +69,7 @@ function Dashboard() {
       setNewUrl("");
       setCustomCode("");
       setExpiresAt("");
+      setPassword("");
       toast.success("Link created 🚀");
       fetchUrls();
 
@@ -125,6 +128,15 @@ function Dashboard() {
                 title="Optional Expiration Date"
                 value={expiresAt}
                 onChange={(e) => setExpiresAt(e.target.value)}
+              />
+
+              <input
+                type="text"
+                className="custom-code-input"
+                placeholder="Password (Optional)"
+                title="Require a password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
 
               <button onClick={handleCreate} disabled={loading}>

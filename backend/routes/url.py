@@ -26,6 +26,12 @@ def create_url():
     original_url = data["original_url"]
     custom_code = data.get("custom_code")
     expires_at = data.get("expires_at", None)
+    password = data.get("password", None)
+    
+    password_hash = None
+    if password:
+        from werkzeug.security import generate_password_hash
+        password_hash = generate_password_hash(password)
 
     if not original_url.startswith("http://") and not original_url.startswith("https://"):
         return jsonify({"error": "Invalid URL. Must start with http:// or https://"}), 400
@@ -78,8 +84,8 @@ def create_url():
 
         # 🔹 Insert URL
         cursor.execute(
-            "INSERT INTO urls (user_id, original_url, short_code, expires_at) VALUES (%s, %s, %s, %s)",
-            (user_id, original_url, short_code, expires_at)
+            "INSERT INTO urls (user_id, original_url, short_code, expires_at, password) VALUES (%s, %s, %s, %s, %s)",
+            (user_id, original_url, short_code, expires_at, password_hash)
         )
 
         conn.commit()

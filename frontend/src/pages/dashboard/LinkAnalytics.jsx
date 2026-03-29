@@ -98,6 +98,27 @@ function Analytics() {
     }
   };
 
+  // 🔹 EXPORT CSV
+  const handleExportCSV = async () => {
+    if (!selectedCode) return;
+    try {
+      const response = await fetch(`http://localhost:5000/api/export-analytics/${selectedCode}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      });
+      if (!response.ok) throw new Error("Export failed");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `clicks_${selectedCode}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -127,7 +148,7 @@ function Analytics() {
         <h2 className="analytics-title">Analytics</h2>
 
         {/* SELECT */}
-        <div className="analytics-select-box">
+        <div className="analytics-select-box" style={{ display: "flex", gap: "15px", alignItems: "center" }}>
           <select
             value={selectedCode}
             onChange={(e) => {
@@ -138,6 +159,7 @@ function Analytics() {
               fetchOsStats(code);
               fetchBrowserStats(code);
             }}
+            style={{ flex: 1 }}
           >
             <option value="">Select a link</option>
             {urls.map((url) => (
@@ -146,6 +168,25 @@ function Analytics() {
               </option>
             ))}
           </select>
+          
+          {selectedCode && (
+            <button 
+              onClick={handleExportCSV} 
+              style={{
+                height: "50px",
+                padding: "0 20px",
+                borderRadius: "10px",
+                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                border: "none",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer",
+                whiteSpace: "nowrap"
+              }}
+            >
+              📥 Export CSV
+            </button>
+          )}
         </div>
 
         {/* STATS */}
