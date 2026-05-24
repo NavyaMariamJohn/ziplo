@@ -109,9 +109,34 @@ def track_click_async(url_id, ip, os_name, browser, lat, lng):
                 except Exception as e:
                     print(f"Geo Error: {e}")
     else:
-        location = "GPS Location"
-        city = "GPS Enabled"
-        region = "Precise"
+        # Reverse Geocoding to get actual Street, City, Country from GPS
+        try:
+            url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}"
+            headers = {'User-Agent': 'Ziplo-URL-Shortener/1.0'}
+            rev_resp = requests.get(url, headers=headers, timeout=3)
+            if rev_resp.status_code == 200:
+                rev_data = rev_resp.json()
+                address = rev_data.get("address", {})
+                
+                # Extract best available details
+                location = address.get("country", "Unknown")
+                region = address.get("state", address.get("region", "Unknown"))
+                
+                # Get city or closest match
+                city_name = address.get("city", address.get("town", address.get("village", address.get("suburb", "Unknown"))))
+                
+                # Get street or road
+                road = address.get("road", "")
+                
+                if road and city_name != "Unknown":
+                    city = f"{road}, {city_name}"
+                else:
+                    city = city_name
+            else:
+                city = "Precise Location (GPS)"
+        except Exception as e:
+            print(f"Reverse Geo Error: {e}")
+            city = "Precise Location (GPS)"
 
     try:
         conn = get_db_connection()
