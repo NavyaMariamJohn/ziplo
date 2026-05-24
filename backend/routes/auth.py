@@ -7,6 +7,8 @@ import datetime
 from flask_mail import Message
 from time import time
 import requests
+import os
+from extensions import limiter
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 
@@ -15,6 +17,7 @@ last_request_time = {}
 # REGISTER
 # ===============================
 @auth_bp.route("/register", methods=["POST"])
+@limiter.limit("20 per minute")
 def register():
 
     data = request.get_json()
@@ -67,6 +70,7 @@ def register():
 # LOGIN + TOKEN GENERATION
 # ===============================
 @auth_bp.route("/login", methods=["POST"])
+@limiter.limit("20 per minute")
 def login():
 
     data = request.get_json()
@@ -323,7 +327,8 @@ def forgot_password():
             "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
         }, current_app.config['SECRET_KEY'], algorithm="HS256")
 
-        reset_link = f"http://localhost:5173/reset-password/{token}"
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+        reset_link = f"{frontend_url}/reset-password/{token}"
 
         msg = Message(
             "Password Reset",

@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import routes
+from extensions import limiter
 from routes.url import url_bp
 from routes.auth import auth_bp
 from routes.analytics import analytics_bp
@@ -27,10 +28,13 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
 
 mail = Mail(app)
-# Enable CORS
+# Initialize Limiter
+limiter.init_app(app)
+
 # Enable CORS with explicit support for preflight and custom headers
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
 CORS(app, resources={r"/*": {
-    "origins": "*",
+    "origins": frontend_url,
     "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
 }})
@@ -188,4 +192,5 @@ def redirect_url(short_code):
 
 # Run server
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug_mode = os.getenv("FLASK_DEBUG", "False").lower() == "true"
+    app.run(debug=debug_mode)
