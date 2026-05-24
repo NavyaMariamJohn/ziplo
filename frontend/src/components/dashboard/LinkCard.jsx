@@ -108,8 +108,12 @@ function LinkCard({ link, refreshUrls }) {
           <option value="disabled">Disabled</option>
         </select>
 
-        {/* QR (future) */}
-        <button>QR</button>
+        {/* QR */}
+        <button onClick={() => {
+          const url = `${ROOT_URL}/${link.short_code}`;
+          const qrUrl = `${ROOT_URL}/generate-qr?url=${encodeURIComponent(url)}`;
+          window.open(qrUrl, "_blank");
+        }}>QR</button>
 
         {/* 📊 STATS → NAVIGATION */}
         <button onClick={() => navigate(`/dashboard/link/${link.id}`)}>

@@ -3,6 +3,7 @@ import "./LinksTable.css";
 import toast from "react-hot-toast";
 import { fetchWithAuth, ROOT_URL } from "../../utils/api";
 import ConfirmModal from "../ui/ConfirmModal";
+import { BsQrCode, BsDownload, BsTrash, BsCopy, BsCheck } from "react-icons/bs";
 
 function LinksTable({ urls, loading, refreshUrls }) {
   const [copiedId, setCopiedId] = useState(null);
@@ -189,27 +190,30 @@ function LinksTable({ urls, loading, refreshUrls }) {
                       onClick={() => handleCopy(item.short_code, item.id)}
                       className={`icon-btn ${copiedId === item.id ? "copied" : ""}`}
                     >
-                      {copiedId === item.id ? "✓" : "📋"}
+                      {copiedId === item.id ? <BsCheck size={18} /> : <BsCopy size={18} />}
                     </button>
 
                     <button
                       onClick={() => handleQR(item.short_code)}
                       className="icon-btn"
+                      title="View QR Code"
                     >
-                      📷
+                      <BsQrCode size={18} />
                     </button>
                     <button
                       onClick={() => downloadQR(item.short_code)}
                       className="icon-btn"
+                      title="Download QR Code"
                     >
-                      ⬇
+                      <BsDownload size={18} />
                     </button>
 
                     <button
                       onClick={() => handleDeleteClick(item.id)}
                       className="icon-btn delete"
+                      title="Delete Link"
                     >
-                      🗑
+                      <BsTrash size={18} />
                     </button>
 
                   </td>
