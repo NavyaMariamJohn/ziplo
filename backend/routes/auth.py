@@ -6,6 +6,7 @@ import jwt
 import datetime
 from flask_mail import Message
 from time import time
+import requests
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 
@@ -39,7 +40,7 @@ def register():
 
         conn.commit()
 
-        # 🔥 GENERATE TOKEN (same as login)
+        #  GENERATE TOKEN WITH ROLE
         token = jwt.encode({
             "user_id": user_id,
             "role": "user",
@@ -63,7 +64,7 @@ def register():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 # ===============================
-# LOGIN  🔥 SECURE FIXED
+# LOGIN + TOKEN GENERATION
 # ===============================
 @auth_bp.route("/login", methods=["POST"])
 def login():
@@ -80,7 +81,7 @@ def login():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # ✅ include role
+        #  include role
         cursor.execute(
             "SELECT id, username, email, password_hash, role FROM users WHERE email = %s",
             (email,)
@@ -100,10 +101,10 @@ def login():
 
             if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
 
-                # 🔥 FIX: include role in token
+                #  FIX: include role in token
                 token = jwt.encode({
                     "user_id": user_id,
-                    "role": role,   # ✅ VERY IMPORTANT
+                    "role": role,   #  VERY IMPORTANT
                     "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)
                 }, current_app.config['SECRET_KEY'], algorithm="HS256")
 
@@ -122,11 +123,82 @@ def login():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+# ===============================
+# GOOGLE LOGIN
+# ===============================
+@auth_bp.route("/google-login", methods=["POST"])
+def google_login():
+    data = request.get_json()
+    token = data.get("token")
+    
+    if not token:
+        return jsonify({"error": "Missing token"}), 400
+        
+    try:
+        # Verify token using Google's tokeninfo endpoint
+        response = requests.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={token}")
+        if response.status_code != 200:
+            return jsonify({"error": "Invalid Google token"}), 401
+            
+        idinfo = response.json()
+        email = idinfo.get("email")
+        if not email:
+            return jsonify({"error": "Email not provided by Google"}), 400
+            
+        username = idinfo.get("name", email.split("@")[0])
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Check if user already exists
+        cursor.execute(
+            "SELECT id, username, email, password_hash, role FROM users WHERE email = %s",
+            (email,)
+        )
+        user = cursor.fetchone()
+        
+        if user:
+            user_id = user[0]
+            role = user[4]
+        else:
+            # Create a new user for Google login
+            cursor.execute(
+                "INSERT INTO users (username, email, password_hash, role) VALUES (%s, %s, %s, %s) RETURNING id",
+                (username, email, "", "user")
+            )
+            user_id = cursor.fetchone()[0]
+            role = "user"
+            conn.commit()
+            
+        # Generate our own JWT token
+        jwt_token = jwt.encode({
+            "user_id": user_id,
+            "role": role,
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+        }, current_app.config['SECRET_KEY'], algorithm="HS256")
+
+        if isinstance(jwt_token, bytes):
+            jwt_token = jwt_token.decode("utf-8")
+
+        cursor.close()
+        conn.close()
+        
+        return jsonify({
+            "message": "Google Login successful!",
+            "token": jwt_token,
+            "username": username,
+            "email": email,
+            "role": role
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
     
 @auth_bp.route("/change-password", methods=["PUT"])
 def change_password():
 
-    # 🔐 Get user from token (your existing system)
+    #  Get user from token (also checks if token is valid)
     user_id, error, status = get_user_from_token()
     if error:
         return error, status
@@ -142,7 +214,7 @@ def change_password():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 🔹 Fetch current password
+        #  Fetch current password
         cursor.execute(
             "SELECT password_hash FROM users WHERE id = %s",
             (user_id,)
@@ -154,20 +226,20 @@ def change_password():
 
         stored_password = user[0]
 
-        # 🔹 Verify current password (bcrypt)
+        # Verify current password (bcrypt)
         if not bcrypt.checkpw(
             current_password.encode("utf-8"),
             stored_password.encode("utf-8")
         ):
             return jsonify({"error": "Incorrect current password"}), 400
 
-        # 🔹 Hash new password
+        #  Hash new password
         new_hashed = bcrypt.hashpw(
             new_password.encode("utf-8"),
             bcrypt.gensalt()
         ).decode("utf-8")
 
-        # 🔹 Update password
+        #  Update password
         cursor.execute(
             "UPDATE users SET password_hash = %s WHERE id = %s",
             (new_hashed, user_id)
@@ -196,19 +268,19 @@ def delete_account():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 🔥 delete clicks first (using correct column)
+        #  delete clicks first 
         cursor.execute(
             "DELETE FROM clicks WHERE url_id IN (SELECT id FROM urls WHERE user_id = %s)",
             (user_id,)
         )
 
-        # 🔥 delete urls
+        #  delete urls
         cursor.execute(
             "DELETE FROM urls WHERE user_id = %s",
             (user_id,)
         )
 
-        # 🔥 delete user
+        #  delete user
         cursor.execute(
             "DELETE FROM users WHERE id = %s",
             (user_id,)

@@ -143,11 +143,41 @@ function Login() {
 
           <div className="social-login">
           <GoogleLogin
-            onSuccess={(credentialResponse) => {
-            console.log(credentialResponse);}}
+            onSuccess={async (credentialResponse) => {
+              setIsLoading(true);
+              try {
+                const response = await fetch(`${API}/google-login`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ token: credentialResponse.credential })
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                  localStorage.setItem("token", data.token);
+                  localStorage.setItem("userName", data.username);
+                  localStorage.setItem("email", data.email);
+                  
+                  const role = data.role ? data.role.trim() : "user";
+                  localStorage.setItem("role", role);
+                  
+                  toast.success("Welcome back 🎉");
+                  setTimeout(() => {
+                    navigate(role === "admin" ? "/admin" : "/dashboard");
+                  }, 300);
+                } else {
+                  toast.error(data.error || "Google login failed");
+                }
+              } catch (err) {
+                console.error(err);
+                toast.error("Server connection failed");
+              } finally {
+                setIsLoading(false);
+              }
+            }}
             onError={() => {
-            console.log("Login Failed");
-           }}
+              toast.error("Google Login Failed");
+            }}
           />
           </div>
 

@@ -5,7 +5,7 @@ from utils.jwt_helper import get_user_from_token, is_admin
 admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 
 # ================================
-# 🔒 MIDDLEWARE-LIKE HELPER
+#  MIDDLEWARE-LIKE HELPER
 # ================================
 def admin_required():
     user_id, error, status = get_user_from_token()
@@ -16,7 +16,7 @@ def admin_required():
     return user_id, None, None
 
 # ================================
-# 📊 GET USER STATS
+#  GET USER STATS
 # ================================
 @admin_bp.route('/user-stats', methods=['GET'])
 def get_user_stats():
@@ -53,7 +53,7 @@ def get_user_stats():
         return jsonify({"error": str(e)}), 500
 
 # ================================
-# 📈 GET SIGNUP TREND (Last 7 Days)
+#  GET SIGNUP TREND (Last 7 Days)
 # ================================
 @admin_bp.route('/signup-trend', methods=['GET'])
 def get_signup_trend():
@@ -86,7 +86,7 @@ def get_signup_trend():
         return jsonify({"error": str(e)}), 500
 
 # ================================
-# 👥 GET ALL USERS (WITH FILTERS & PAGINATION)
+#  GET ALL USERS (WITH FILTERS & PAGINATION)
 # ================================
 @admin_bp.route('/users', methods=['GET'])
 def get_all_users():
@@ -104,7 +104,7 @@ def get_all_users():
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # 🔹 Build Query Conditions
+        #  Build Query Conditions
         conditions = ["1=1"]
         params = []
 
@@ -123,12 +123,12 @@ def get_all_users():
 
         where_clause = " AND ".join(conditions)
 
-        # 🔹 Get Total Count (before pagination)
+        #  Get Total Count (before pagination)
         count_query = f"SELECT COUNT(*) FROM users u WHERE {where_clause}"
         cur.execute(count_query, params)
         total = cur.fetchone()[0]
 
-        # 🔹 Apply Pagination & Sorting
+        #  Apply Pagination & Sorting
         query = f"""
             SELECT 
                 u.id, u.username, u.email, u.role, u.created_at, u.last_login, u.is_active,
@@ -170,7 +170,7 @@ def get_all_users():
         return jsonify({"error": str(e)}), 500
 
 # ================================
-# 🔗 GET ALL LINKS
+#  GET ALL LINKS
 # ================================
 @admin_bp.route('/links', methods=['GET'])
 def get_all_links():
@@ -214,7 +214,7 @@ def get_all_links():
         return jsonify({"error": str(e)}), 500
 
 # ================================
-# 👤 DEACTIVATE USER
+#  DEACTIVATE USER
 # ================================
 @admin_bp.route('/users/<int:user_id>/deactivate', methods=['PUT'])
 def deactivate_user(user_id):
@@ -241,7 +241,7 @@ def deactivate_user(user_id):
         return jsonify({"error": str(e)}), 500
 
 # ================================
-# 👤 DELETE USER
+#  DELETE USER
 # ================================
 @admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
@@ -252,7 +252,7 @@ def delete_user(user_id):
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # 1️⃣ delete clicks of user's URLs
+        #  delete clicks of user's URLs
         cur.execute("""
             DELETE FROM clicks
             WHERE url_id IN (
@@ -260,10 +260,10 @@ def delete_user(user_id):
             )
         """, (user_id,))
 
-        # 2️⃣ delete user's URLs
+        #  delete user's URLs
         cur.execute("DELETE FROM urls WHERE user_id = %s", (user_id,))
 
-        # 3️⃣ delete user
+        #  delete user
         cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
 
         conn.commit()
@@ -279,7 +279,7 @@ def delete_user(user_id):
         if conn: conn.close()
 
 # ================================
-# 🔗 DISABLE LINK
+#  DISABLE LINK
 # ================================
 @admin_bp.route('/links/<int:link_id>/disable', methods=['PUT'])
 def disable_link(link_id):

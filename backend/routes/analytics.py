@@ -21,7 +21,7 @@ def get_analytics(short_code):
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 🔐 Get URL (ownership check)
+        #  Get URL (ownership check)
         cursor.execute(
             "SELECT id, original_url FROM urls WHERE short_code = %s AND user_id = %s",
             (short_code, user_id)
@@ -35,13 +35,13 @@ def get_analytics(short_code):
         url_id, original_url = url
 
         # ================================
-        # 📊 TOTAL CLICKS
+        #  TOTAL CLICKS
         # ================================
         cursor.execute("SELECT COUNT(*) FROM clicks WHERE url_id = %s", (url_id,))
         total_clicks = cursor.fetchone()[0]
 
         # ================================
-        # 📅 TODAY CLICKS
+        #  TODAY CLICKS
         # ================================
         cursor.execute("""
             SELECT COUNT(*) 
@@ -52,7 +52,7 @@ def get_analytics(short_code):
         today_clicks = cursor.fetchone()[0]
 
         # ================================
-        # 📆 WEEK CLICKS
+        #  WEEK CLICKS
         # ================================
         cursor.execute("""
             SELECT COUNT(*) 
@@ -63,7 +63,7 @@ def get_analytics(short_code):
         week_clicks = cursor.fetchone()[0]
 
         # ================================
-        # 👤 UNIQUE CLICKS
+        #  UNIQUE CLICKS
         # ================================
         cursor.execute("""
             SELECT COUNT(DISTINCT ip_address)
@@ -73,7 +73,7 @@ def get_analytics(short_code):
         unique_clicks = cursor.fetchone()[0]
 
         # ================================
-        # 📋 CLICK DETAILS
+        #  CLICK DETAILS
         # ================================
         cursor.execute("""
             SELECT ip_address, location, city, region, timestamp 
@@ -106,7 +106,7 @@ def get_analytics(short_code):
             })
 
         # ================================
-        # 📈 CLICK TREND (FIXED POSITION)
+        #  CLICK TREND 
         # ================================
         cursor.execute("""
             SELECT DATE(timestamp) as day, COUNT(*) 
@@ -131,7 +131,7 @@ def get_analytics(short_code):
         conn.close()
 
         # ================================
-        # 🚀 FINAL RESPONSE
+        #  FINAL RESPONSE
         # ================================
         return jsonify({
             "short_code": short_code,
@@ -141,7 +141,7 @@ def get_analytics(short_code):
             "week_clicks": week_clicks,
             "unique_clicks": unique_clicks,
             "click_details": click_details,
-            "click_trend": click_trend  # ✅ FIXED
+            "click_trend": click_trend  
         }), 200
 
     except Exception as e:
@@ -160,7 +160,7 @@ def location_clicks(short_code):
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 🔐 Get URL ID
+        #  Get URL ID
         cursor.execute(
             "SELECT id FROM urls WHERE short_code = %s AND user_id = %s",
             (short_code, user_id)
@@ -173,7 +173,7 @@ def location_clicks(short_code):
 
         url_id = url[0]
 
-        # 🔥 FILTERED QUERY (THIS WAS MISSING)
+        #  FILTERED QUERY BY LOCATION
         cursor.execute("""
             SELECT city, region, location, COUNT(*) 
             FROM clicks 
@@ -342,7 +342,7 @@ def system_analytics():
 @analytics_bp.route("/analytics-overview", methods=["GET"])
 def analytics_overview():
 
-    # 🔐 AUTH (same as other routes)
+    #  AUTH (same as other routes)
     user_id, error, status = get_user_from_token()
     if error:
         return error, status
@@ -352,7 +352,7 @@ def analytics_overview():
         cursor = conn.cursor()
 
         # ================================
-        # 📊 TOTAL CLICKS
+        #  TOTAL CLICKS
         # ================================
         cursor.execute("""
             SELECT COUNT(*) 
@@ -363,7 +363,7 @@ def analytics_overview():
         total_clicks = cursor.fetchone()[0]
 
         # ================================
-        # 👤 UNIQUE CLICKS
+        #  UNIQUE CLICKS
         # ================================
         cursor.execute("""
             SELECT COUNT(DISTINCT c.ip_address)
@@ -374,7 +374,7 @@ def analytics_overview():
         unique_clicks = cursor.fetchone()[0]
 
         # ================================
-        # 🔝 TOP LINKS
+        #  TOP LINKS
         # ================================
         cursor.execute("""
             SELECT u.id, u.short_code, COUNT(c.id) as clicks
@@ -400,7 +400,7 @@ def analytics_overview():
         top_link = top_links[0] if top_links else None
 
         # ================================
-        # 📈 PERFECT TREND (LAST 7 DAYS)
+        #  PERFECT TREND (LAST 7 DAYS)
         # ================================
         today = datetime.utcnow().date()
         days = [(today - timedelta(days=i)) for i in range(6, -1, -1)]
@@ -419,7 +419,7 @@ def analytics_overview():
 
         trend_map = {str(row[0]): row[1] for row in trend_rows}
 
-        # 🔥 fill missing days (IMPORTANT FIX)
+        
         trend = []
         for d in days:
             key = str(d)
@@ -429,7 +429,7 @@ def analytics_overview():
             })
 
         # ================================
-        # 📊 AVG PER DAY
+        #  AVG PER DAY
         # ================================
         avg_per_day = round(total_clicks / 7) if total_clicks else 0
 
@@ -437,7 +437,7 @@ def analytics_overview():
         conn.close()
 
         # ================================
-        # 🚀 FINAL RESPONSE
+        #  FINAL RESPONSE
         # ================================
         return jsonify({
             "totalClicks": total_clicks,

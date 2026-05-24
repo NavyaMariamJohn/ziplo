@@ -39,9 +39,7 @@ CORS(app, resources={r"/*": {
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 
-# ================================
-# HEALTH CHECK
-# ================================
+
 # ================================
 # HEALTH CHECK + UPTIME
 # ================================
@@ -70,7 +68,7 @@ app.register_blueprint(qr_bp)
 
 
 # ================================
-# ROOT REDIRECTION + ANALYTICS (PROFESSIONAL CLEAN URLS 🔥)
+# ROOT REDIRECTION + ANALYTICS LOGGING
 # ================================
 @app.route("/<short_code>", methods=["GET", "POST"])
 def redirect_url(short_code):
@@ -158,7 +156,7 @@ def redirect_url(short_code):
         if expires_at and datetime.utcnow() > expires_at:
             return "This URL has expired", 410
 
-        # 🔥 Password Check
+        #  Password Check
         if password_hash:
             from flask import render_template
             if request.method == "GET":
@@ -170,7 +168,7 @@ def redirect_url(short_code):
                 if not submitted_password or not check_password_hash(password_hash, submitted_password):
                     return render_template("password_prompt.html", short_code=short_code, error="Incorrect password")
         
-        # 🔥 Log click (only if GET w/o password XOR POST with correct password)
+        #  Log click (only if GET w/o password XOR POST with correct password)
         cursor.execute(
             "INSERT INTO clicks (url_id, ip_address, location, city, region, os, browser) VALUES (%s, %s, %s, %s, %s, %s, %s)",
             (url_id, ip, location, city, region, os_name, browser)

@@ -14,7 +14,7 @@ url_bp = Blueprint("url", __name__, url_prefix="/api")
 @url_bp.route("/create-url", methods=["POST"])
 def create_url():
 
-    # Allow guest users (optional auth)
+    # Allow guest users 
     user_id, error, status = get_user_from_token()
     if error:
         user_id = None
@@ -40,7 +40,7 @@ def create_url():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 🔹 Handle Custom Code vs Random
+        #  Handle Custom Code vs Random
         if custom_code:
             # Validate custom_code (alphanumeric only)
             if not custom_code.isalnum():
@@ -53,7 +53,7 @@ def create_url():
             
             short_code = custom_code
         else:
-            # 🔹 Check if already exists (only for random generation)
+            #  Check if already exists (only for random generation)
             if user_id:
                 cursor.execute(
                     "SELECT short_code FROM urls WHERE user_id = %s AND original_url = %s",
@@ -72,7 +72,7 @@ def create_url():
                     "short_code": row[0]
                 }), 200
 
-            # 🔹 Generate unique random short code
+            #  Generate unique random short code
             while True:
                 short_code = generate_short_code()
                 cursor.execute(
@@ -82,7 +82,7 @@ def create_url():
                 if not cursor.fetchone():
                     break
 
-        # 🔹 Insert URL
+        #  Insert URL
         cursor.execute(
             "INSERT INTO urls (user_id, original_url, short_code, expires_at, password) VALUES (%s, %s, %s, %s, %s)",
             (user_id, original_url, short_code, expires_at, password_hash)
@@ -102,7 +102,7 @@ def create_url():
 
 
 # ================================
-# GET USER URLS (FIXED 🔥)
+# GET USER URLS 
 # ================================
 @url_bp.route("/user-urls", methods=["GET"])
 def get_user_urls():
@@ -176,7 +176,7 @@ def delete_url(url_id):
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 🔹 Verify ownership
+        #  Verify ownership
         cursor.execute(
             "SELECT id FROM urls WHERE id = %s AND user_id = %s",
             (url_id, user_id)
@@ -185,13 +185,13 @@ def delete_url(url_id):
         if not cursor.fetchone():
             return jsonify({"error": "URL not found or unauthorized"}), 404
 
-        # 🔥 Delete clicks first
+        #  Delete clicks first
         cursor.execute(
             "DELETE FROM clicks WHERE url_id = %s",
             (url_id,)
         )
 
-        # 🔥 Delete URL
+        #  Delete URL
         cursor.execute(
             "DELETE FROM urls WHERE id = %s",
             (url_id,)
@@ -281,7 +281,7 @@ def update_link_status(url_id):
     data = request.get_json()
     new_status = data.get("status")
 
-    # ✅ Validate
+    #  Validate
     if new_status not in ["active", "paused", "disabled"]:
         return jsonify({"error": "Invalid status"}), 400
 
@@ -289,7 +289,7 @@ def update_link_status(url_id):
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 🔐 Ownership check
+        #  Ownership check
         cursor.execute(
             "SELECT id FROM urls WHERE id = %s AND user_id = %s",
             (url_id, user_id)
@@ -298,7 +298,7 @@ def update_link_status(url_id):
         if not cursor.fetchone():
             return jsonify({"error": "Unauthorized"}), 403
 
-        # 🔄 Update
+        #  Update
         cursor.execute(
             "UPDATE urls SET status = %s WHERE id = %s RETURNING id, original_url, short_code, status",
             (new_status, url_id)
@@ -334,7 +334,7 @@ def get_stats():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 🔹 Total clicks
+        #  Total clicks
         cursor.execute("""
             SELECT COUNT(c.id)
             FROM clicks c
@@ -343,7 +343,7 @@ def get_stats():
         """, (user_id,))
         total_clicks = cursor.fetchone()[0]
 
-        # 🔹 Total links
+        #  Total links
         cursor.execute("""
             SELECT COUNT(*)
             FROM urls
@@ -351,7 +351,7 @@ def get_stats():
         """, (user_id,))
         total_links = cursor.fetchone()[0]
 
-        # 🔹 Active links
+        #  Active links
         cursor.execute("""
             SELECT COUNT(*)
             FROM urls
@@ -359,7 +359,7 @@ def get_stats():
         """, (user_id,))
         active_links = cursor.fetchone()[0]
 
-        # 🔹 Clicks per link
+        #  Clicks per link
         cursor.execute("""
             SELECT 
                 u.short_code,
