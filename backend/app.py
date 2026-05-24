@@ -72,92 +72,75 @@ app.register_blueprint(qr_bp)
 # ================================
 # ROOT REDIRECTION + ANALYTICS (PROFESSIONAL CLEAN URLS 🔥)
 # ================================
-import threading
+@app.route("/<short_code>", methods=["GET", "POST"])
+def redirect_url(short_code):
+    # 🕵️ Get Client IP (Handle proxies like Render/Vercel)
+    ip_header = request.headers.get("X-Forwarded-For", request.remote_addr)
+    # Take the first IP if it's a list
+    ip = ip_header.split(',')[0].strip() if ip_header else "127.0.0.1"
 
-def track_click_async(url_id, ip, os_name, browser, lat, lng):
-    # This runs in a background thread
+    # 🔹 Safe geolocation
     location = "Unknown"
     city = "Unknown"
     region = "Unknown"
-
-    if not lat or not lng:
-        # Fallback to IP geolocation
-        if ip not in ["127.0.0.1", "localhost", "::1"]:
-            try:
-                geo_resp = requests.get(f"http://ip-api.com/json/{ip}", timeout=2)
-                if geo_resp.status_code == 200:
-                    geo_data = geo_resp.json()
-                    location = geo_data.get("country", "Unknown")
-                    city = geo_data.get("city", "Unknown")
-                    region = geo_data.get("regionName", "Unknown")
-                    lat = geo_data.get("lat")
-                    lng = geo_data.get("lon")
-            except:
-                pass
-            if location == "Unknown":
-                try:
-                    geo = requests.get(
-                        f"https://ipapi.co/{ip}/json/",
-                        timeout=2,
-                        headers={'User-Agent': 'Ziplo-URL-Shortener'}
-                    ).json()
-                    location = geo.get("country_name", "Unknown")
-                    city = geo.get("city", "Unknown")
-                    region = geo.get("region", "Unknown")
-                    lat = geo.get("latitude")
-                    lng = geo.get("longitude")
-                except Exception as e:
-                    print(f"Geo Error: {e}")
+    
+    # 🔹 User-Agent OS/Browser
+    ua_string = request.headers.get('User-Agent', '').lower()
+    
+    if 'windows' in ua_string: os_name = 'Windows'
+    elif 'iphone' in ua_string or 'ipad' in ua_string: os_name = 'iOS'
+    elif 'mac' in ua_string: os_name = 'macOS'
+    elif 'android' in ua_string: os_name = 'Android'
+    elif 'linux' in ua_string: os_name = 'Linux'
+    else: os_name = 'Other'
+        
+    if 'edg' in ua_string: browser = 'Edge'
+    elif 'chrome' in ua_string: browser = 'Chrome'
+    elif 'safari' in ua_string and 'chrome' not in ua_string: browser = 'Safari'
+    elif 'firefox' in ua_string: browser = 'Firefox'
+    else: browser = 'Other'
+    
+    if ip in ["127.0.0.1", "localhost", "::1"]:
+        location = "Local Test"
+        city = "Local Test"
+        region = "Local Test"
     else:
-        # Reverse Geocoding to get actual Street, City, Country from GPS
+        # 1. Primary: ip-api.com (more generous rate limits for servers)
         try:
-            # Using BigDataCloud which is much more reliable on hosted servers like Render
-            url = f"https://api.bigdatacloud.net/data/reverse-geocode-client?latitude={lat}&longitude={lng}&localityLanguage=en"
-            rev_resp = requests.get(url, timeout=3)
-            if rev_resp.status_code == 200:
-                rev_data = rev_resp.json()
-                
-                location = rev_data.get("countryName", "Unknown")
-                region = rev_data.get("principalSubdivision", "Unknown")
-                
-                # BigDataCloud usually provides city, locality, or principalSubdivision
-                city_name = rev_data.get("city") or rev_data.get("locality") or "Unknown"
-                
-                if city_name != "Unknown":
-                    city = city_name
-                else:
-                    city = "Precise Location (GPS)"
-            else:
-                city = "Precise Location (GPS)"
-        except Exception as e:
-            print(f"Reverse Geo Error: {e}")
-            city = "Precise Location (GPS)"
+            geo_resp = requests.get(f"http://ip-api.com/json/{ip}", timeout=2)
+            if geo_resp.status_code == 200:
+                geo_data = geo_resp.json()
+                location = geo_data.get("country", "Unknown")
+                city = geo_data.get("city", "Unknown")
+                region = geo_data.get("regionName", "Unknown")
+        except:
+            pass
+
+        # 2. Fallback: ipapi.co
+        if location == "Unknown":
+            try:
+                geo = requests.get(
+                    f"https://ipapi.co/{ip}/json/",
+                    timeout=2,
+                    headers={'User-Agent': 'Ziplo-URL-Shortener'}
+                ).json()
+                location = geo.get("country_name", "Unknown")
+                city = geo.get("city", "Unknown")
+                region = geo.get("region", "Unknown")
+            except Exception as e:
+                print(f"Geo Error: {e}")
+                location = "Unknown"
 
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO clicks (url_id, ip_address, location, city, region, os, browser, latitude, longitude) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (url_id, ip, location, city, region, os_name, browser, lat, lng)
-        )
-        conn.commit()
-        cursor.close()
-        conn.close()
-    except Exception as e:
-        print(f"Async tracking error: {e}")
 
-@app.route("/<short_code>", methods=["GET", "POST"])
-def redirect_url(short_code):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
         cursor.execute(
             "SELECT id, original_url, status, expires_at, password FROM urls WHERE short_code = %s",
             (short_code,)
         )
+
         row = cursor.fetchone()
-        cursor.close()
-        conn.close()
 
         if not row:
             return "Short URL not found", 404
@@ -175,45 +158,29 @@ def redirect_url(short_code):
         if expires_at and datetime.utcnow() > expires_at:
             return "This URL has expired", 410
 
-        from flask import render_template
-        if request.method == "GET":
-            return render_template("tracking_prompt.html", short_code=short_code, password_required=bool(password_hash), error=None)
-
-        if request.method == "POST":
-            # Check Password
-            if password_hash:
+        # 🔥 Password Check
+        if password_hash:
+            from flask import render_template
+            if request.method == "GET":
+                return render_template("password_prompt.html", short_code=short_code, error=None)
+            
+            if request.method == "POST":
                 from werkzeug.security import check_password_hash
                 submitted_password = request.form.get("password")
                 if not submitted_password or not check_password_hash(password_hash, submitted_password):
-                    return render_template("tracking_prompt.html", short_code=short_code, password_required=True, error="Incorrect password")
+                    return render_template("password_prompt.html", short_code=short_code, error="Incorrect password")
+        
+        # 🔥 Log click (only if GET w/o password XOR POST with correct password)
+        cursor.execute(
+            "INSERT INTO clicks (url_id, ip_address, location, city, region, os, browser) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (url_id, ip, location, city, region, os_name, browser)
+        )
 
-            # Extract Tracking Info
-            lat = request.form.get("lat")
-            lng = request.form.get("lng")
-            if lat == "null" or lat == "": lat = None
-            if lng == "null" or lng == "": lng = None
+        conn.commit()
+        cursor.close()
+        conn.close()
 
-            ip_header = request.headers.get("X-Forwarded-For", request.remote_addr)
-            ip = ip_header.split(',')[0].strip() if ip_header else "127.0.0.1"
-            
-            ua_string = request.headers.get('User-Agent', '').lower()
-            if 'windows' in ua_string: os_name = 'Windows'
-            elif 'iphone' in ua_string or 'ipad' in ua_string: os_name = 'iOS'
-            elif 'mac' in ua_string: os_name = 'macOS'
-            elif 'android' in ua_string: os_name = 'Android'
-            elif 'linux' in ua_string: os_name = 'Linux'
-            else: os_name = 'Other'
-                
-            if 'edg' in ua_string: browser = 'Edge'
-            elif 'chrome' in ua_string: browser = 'Chrome'
-            elif 'safari' in ua_string and 'chrome' not in ua_string: browser = 'Safari'
-            elif 'firefox' in ua_string: browser = 'Firefox'
-            else: browser = 'Other'
-
-            # Start background thread for tracking
-            threading.Thread(target=track_click_async, args=(url_id, ip, os_name, browser, lat, lng)).start()
-
-            return redirect(original_url)
+        return redirect(original_url)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
