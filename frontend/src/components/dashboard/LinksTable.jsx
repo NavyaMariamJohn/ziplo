@@ -71,6 +71,41 @@ function LinksTable({ urls, loading, refreshUrls }) {
     }
   };
 
+  // 📷 GENERATE QR
+  const handleQR = (shortCode) => {
+    const url = `${ROOT_URL}/${shortCode}`;
+    const qrUrl = `${ROOT_URL}/generate-qr?url=${encodeURIComponent(url)}`;
+
+    window.open(qrUrl, "_blank");
+  };
+
+  // ⬇ DOWNLOAD QR
+  const downloadQR = async (shortCode) => {
+    try {
+      const url = `${ROOT_URL}/${shortCode}`;
+      const qrUrl = `${ROOT_URL}/generate-qr?url=${encodeURIComponent(url)}`;
+
+      const response = await fetch(qrUrl);
+      const blob = await response.blob();
+
+      const downloadUrl = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = downloadUrl;
+      a.download = `qr-${shortCode}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(downloadUrl);
+
+      toast.success("QR downloaded");
+    } catch (err) {
+      console.error(err);
+      toast.error("Download failed");
+    }
+  };
+
   return (
     <div className="links-table-container">
 
@@ -155,6 +190,19 @@ function LinksTable({ urls, loading, refreshUrls }) {
                       className={`icon-btn ${copiedId === item.id ? "copied" : ""}`}
                     >
                       {copiedId === item.id ? "✓" : "📋"}
+                    </button>
+
+                    <button
+                      onClick={() => handleQR(item.short_code)}
+                      className="icon-btn"
+                    >
+                      📷
+                    </button>
+                    <button
+                      onClick={() => downloadQR(item.short_code)}
+                      className="icon-btn"
+                    >
+                      ⬇
                     </button>
 
                     <button

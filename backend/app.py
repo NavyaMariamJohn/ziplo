@@ -14,6 +14,7 @@ from routes.url import url_bp
 from routes.auth import auth_bp
 from routes.analytics import analytics_bp
 from routes.admin import admin_bp
+from routes.qr import qr_bp
 
 app = Flask(__name__)
 
@@ -65,6 +66,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(url_bp)
 app.register_blueprint(analytics_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(qr_bp)
 
 
 # ================================
