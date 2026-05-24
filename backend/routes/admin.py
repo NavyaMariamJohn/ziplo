@@ -214,10 +214,10 @@ def get_all_links():
         return jsonify({"error": str(e)}), 500
 
 # ================================
-#  DEACTIVATE USER
+#  TOGGLE USER STATUS
 # ================================
-@admin_bp.route('/users/<int:user_id>/deactivate', methods=['PUT'])
-def deactivate_user(user_id):
+@admin_bp.route('/users/<int:user_id>/toggle-status', methods=['PUT'])
+def toggle_user_status(user_id):
     _, error, status = admin_required()
     if error: return error, status
 
@@ -227,15 +227,101 @@ def deactivate_user(user_id):
 
         cur.execute("""
             UPDATE users
-            SET is_active = FALSE
+            SET is_active = NOT is_active
             WHERE id = %s
+            RETURNING is_active
         """, (user_id,))
+        
+        row = cur.fetchone()
+        if not row:
+            return jsonify({"error": "User not found"}), 404
 
         conn.commit()
         cur.close()
         conn.close()
 
-        return jsonify({"message": "User deactivated"}), 200
+        status_msg = "activated" if row[0] else "suspended"
+        return jsonify({"message": f"User {status_msg}"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ================================
+#  EDIT USER
+# ================================
+@admin_bp.route('/users/<int:user_id>', methods=['PUT'])
+def edit_user(user_id):
+    _, error, status = admin_required()
+    if error: return error, status
+
+    data = request.get_json()
+    username = data.get("username")
+    role = data.get("role")
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            UPDATE users
+            SET username = COALESCE(%s, username),
+                role = COALESCE(%s, role)
+            WHERE id = %s
+        """, (username, role, user_id))
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({"message": "User updated successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ================================
+#  GET USER LINKS
+# ================================
+@admin_bp.route('/users/<int:user_id>/links', methods=['GET'])
+def get_user_links(user_id):
+    _, error, status = admin_required()
+    if error: return error, status
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT 
+                urls.id,
+                urls.original_url,
+                urls.short_code,
+                urls.status,
+                urls.created_at,
+                COUNT(clicks.id) as clicks
+            FROM urls
+            LEFT JOIN clicks ON urls.id = clicks.url_id
+            WHERE urls.user_id = %s
+            GROUP BY urls.id
+            ORDER BY urls.created_at DESC
+        """, (user_id,))
+
+        rows = cur.fetchall()
+
+        result = []
+        for row in rows:
+            result.append({
+                "id": row[0],
+                "original_url": row[1],
+                "short_code": row[2],
+                "status": row[3],
+                "created_at": str(row[4]),
+                "clicks": row[5]
+            })
+
+        cur.close()
+        conn.close()
+
+        return jsonify(result), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

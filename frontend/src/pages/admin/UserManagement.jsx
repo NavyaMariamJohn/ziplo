@@ -116,14 +116,10 @@ function UserManagement() {
             </div>
           ) : (
             <>
-              {/* ✅ User's local filtering (as a safety layer) */}
+              {/* ✅ Relies entirely on backend filtering/pagination */}
               <UserTable
-                users={users.filter((u) => {
-                  return (
-                    (role === "all" || u.role === role) &&
-                    (status === "all" || u.status === status)
-                  );
-                })}
+                users={users}
+                refreshUsers={fetchUsers}
               />
 
               <footer className="table-footer">

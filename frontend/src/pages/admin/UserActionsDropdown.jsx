@@ -4,15 +4,21 @@
 
 import { useState } from "react";
 import { fetchWithAuth } from "../../utils/api";
+import UserEditModal from "./UserEditModal";
+import UserLinksModal from "./UserLinksModal";
 
-function UserActionsDropdown({ user }) {
+function UserActionsDropdown({ user, refreshUsers }) {
   const [open, setOpen] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showLinks, setShowLinks] = useState(false);
 
-  const deactivateUser = async () => {
+  const toggleStatus = async () => {
     try {
-      if (window.confirm(`Are you sure you want to suspend ${user.username || user.email}?`)) {
-        await fetchWithAuth(`/admin/users/${user.id}/deactivate`, { method: "PUT" });
-        window.location.reload();
+      const action = user.is_active ? "suspend" : "activate";
+      if (window.confirm(`Are you sure you want to ${action} ${user.username || user.email}?`)) {
+        await fetchWithAuth(`/admin/users/${user.id}/toggle-status`, { method: "PUT" });
+        refreshUsers();
+        setOpen(false);
       }
     } catch (err) {
       console.error("Deactivate error:", err);
@@ -23,7 +29,8 @@ function UserActionsDropdown({ user }) {
     try {
       if (window.confirm(`PERMANENT: Delete ${user.username || user.email} and all their links?`)) {
         await fetchWithAuth(`/admin/users/${user.id}`, { method: "DELETE" });
-        window.location.reload();
+        refreshUsers();
+        setOpen(false);
       }
     } catch (err) {
       console.error("Delete error:", err);
@@ -40,12 +47,19 @@ function UserActionsDropdown({ user }) {
         <>
           <div className="dropdown-overlay" onClick={() => setOpen(false)} />
           <div className="dropdown-menu shadow">
-            <button className="menu-item"><span className="icon">👁</span> View Profile</button>
-            <button className="menu-item"><span className="icon">✏️</span> Edit</button>
-            <button className="menu-item"><span className="icon">🔗</span> View Links</button>
+            <button className="menu-item" onClick={() => { setShowEdit(true); setOpen(false); }}>
+              <span className="icon">👁</span> View Profile
+            </button>
+            <button className="menu-item" onClick={() => { setShowEdit(true); setOpen(false); }}>
+              <span className="icon">✏️</span> Edit
+            </button>
+            <button className="menu-item" onClick={() => { setShowLinks(true); setOpen(false); }}>
+              <span className="icon">🔗</span> View Links
+            </button>
             
-            <button className="menu-item" onClick={deactivateUser}>
-              <span className="icon">⏸</span> Suspend
+            <button className="menu-item" onClick={toggleStatus}>
+              <span className="icon">{user.is_active ? "⏸" : "▶️"}</span> 
+              {user.is_active ? "Suspend" : "Activate"}
             </button>
 
             <div className="divider" />
@@ -56,6 +70,9 @@ function UserActionsDropdown({ user }) {
           </div>
         </>
       )}
+
+      {showEdit && <UserEditModal user={user} onClose={() => setShowEdit(false)} refreshUsers={refreshUsers} />}
+      {showLinks && <UserLinksModal user={user} onClose={() => setShowLinks(false)} />}
     </div>
   );
 }

@@ -4,7 +4,7 @@
 
 import UserActionsDropdown from "./UserActionsDropdown";
 
-function UserRow({ user }) {
+function UserRow({ user, refreshUsers }) {
   const status = user.is_active ? "active" : "suspended";
   const initials = user.username
     ? user.username.split(" ").map((n) => n[0]).join("").toUpperCase()
@@ -34,7 +34,7 @@ function UserRow({ user }) {
       </span>
 
       <div className="col-actions">
-        <UserActionsDropdown user={user} />
+        <UserActionsDropdown user={user} refreshUsers={refreshUsers} />
       </div>
     </div>
   );

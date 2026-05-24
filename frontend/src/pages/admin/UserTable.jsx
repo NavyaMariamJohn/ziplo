@@ -4,7 +4,7 @@
 
 import UserRow from "./UserRow";
 
-function UserTable({ users = [] }) {
+function UserTable({ users = [], refreshUsers }) {
   return (
     <div className="user-table">
       
@@ -23,7 +23,7 @@ function UserTable({ users = [] }) {
         <p className="empty">No users found</p>
       ) : (
         users.map((user) => (
-          <UserRow key={user.id} user={user} />
+          <UserRow key={user.id} user={user} refreshUsers={refreshUsers} />
         ))
       )}
 
