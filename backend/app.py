@@ -111,27 +111,22 @@ def track_click_async(url_id, ip, os_name, browser, lat, lng):
     else:
         # Reverse Geocoding to get actual Street, City, Country from GPS
         try:
-            url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}"
-            headers = {'User-Agent': 'Ziplo-URL-Shortener/1.0'}
-            rev_resp = requests.get(url, headers=headers, timeout=3)
+            # Using BigDataCloud which is much more reliable on hosted servers like Render
+            url = f"https://api.bigdatacloud.net/data/reverse-geocode-client?latitude={lat}&longitude={lng}&localityLanguage=en"
+            rev_resp = requests.get(url, timeout=3)
             if rev_resp.status_code == 200:
                 rev_data = rev_resp.json()
-                address = rev_data.get("address", {})
                 
-                # Extract best available details
-                location = address.get("country", "Unknown")
-                region = address.get("state", address.get("region", "Unknown"))
+                location = rev_data.get("countryName", "Unknown")
+                region = rev_data.get("principalSubdivision", "Unknown")
                 
-                # Get city or closest match
-                city_name = address.get("city", address.get("town", address.get("village", address.get("suburb", "Unknown"))))
+                # BigDataCloud usually provides city, locality, or principalSubdivision
+                city_name = rev_data.get("city") or rev_data.get("locality") or "Unknown"
                 
-                # Get street or road
-                road = address.get("road", "")
-                
-                if road and city_name != "Unknown":
-                    city = f"{road}, {city_name}"
-                else:
+                if city_name != "Unknown":
                     city = city_name
+                else:
+                    city = "Precise Location (GPS)"
             else:
                 city = "Precise Location (GPS)"
         except Exception as e:
