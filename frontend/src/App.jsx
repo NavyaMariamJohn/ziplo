@@ -117,7 +117,7 @@ function App() {
           />
 
           <Route
-            path="/settings"
+            path="/dashboard/settings"
             element={
               <ProtectedRoute>
                 <Settings />

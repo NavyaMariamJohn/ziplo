@@ -20,6 +20,9 @@ function Settings() {
 
   const [expiry, setExpiry] = useState("Never");
   const [notifications, setNotifications] = useState(true);
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+  const [twoFactor, setTwoFactor] = useState(false);
+  const [apiKey] = useState("sk_live_" + Math.random().toString(36).substring(2, 15));
 
   const editRef = useRef(null);
 
@@ -224,6 +227,68 @@ function Settings() {
               }}
             >
               <div className="toggle-circle" />
+            </div>
+          </div>
+        </div>
+
+        {/* APPEARANCE */}
+        <div className="settings-card">
+          <h3>Appearance & Security</h3>
+
+          <div className="settings-group row">
+            <label>Theme Preference</label>
+            <select
+              value={theme}
+              onChange={(e) => {
+                setTheme(e.target.value);
+                localStorage.setItem("theme", e.target.value);
+                toast.success(`Theme set to ${e.target.value}`);
+                // In production, update document element class here
+              }}
+            >
+              <option value="dark">Dark Mode</option>
+              <option value="light">Light Mode</option>
+              <option value="system">System Default</option>
+            </select>
+          </div>
+
+          <div className="settings-group row">
+            <label>Two-Factor Authentication (2FA)</label>
+            <div
+              className={`toggle ${twoFactor ? "active" : ""}`}
+              onClick={() => {
+                setTwoFactor(!twoFactor);
+                toast.success(
+                  twoFactor
+                    ? "2FA Disabled"
+                    : "2FA Enabled (Mocked)"
+                );
+              }}
+            >
+              <div className="toggle-circle" />
+            </div>
+          </div>
+        </div>
+
+        {/* DEVELOPER */}
+        <div className="settings-card">
+          <h3>Developer API</h3>
+          <p className="settings-subtitle">Integrate Ziplo into your own apps with your personal API key.</p>
+          
+          <div className="settings-group">
+            <label>Secret API Key</label>
+            <div className="password-row">
+              <input value={apiKey} disabled className="api-key-input" style={{ width: '100%', paddingRight: '10px' }} />
+              <button 
+                className="btn btn-secondary" 
+                style={{ marginLeft: '10px', whiteSpace: 'nowrap' }}
+                onClick={() => {
+                  navigator.clipboard.writeText(apiKey);
+                  toast.success("API Key Copied!");
+                }}
+              >
+                Copy
+              </button>
             </div>
           </div>
         </div>

@@ -82,7 +82,7 @@ function DashboardNavbar({ toggleSidebar }) {
 
             <hr />
 
-            <button onClick={() => navigate("/settings")}>
+            <button onClick={() => navigate("/dashboard/settings")}>
               ⚙️ Settings
             </button>
 
