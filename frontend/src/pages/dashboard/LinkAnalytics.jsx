@@ -102,7 +102,7 @@ function Analytics() {
   const handleExportCSV = async () => {
     if (!selectedCode) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/export-analytics/${selectedCode}`, {
+      const response = await fetch(`${API}/export-analytics/${selectedCode}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       if (!response.ok) throw new Error("Export failed");
