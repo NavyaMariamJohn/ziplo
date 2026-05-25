@@ -17,7 +17,7 @@ function DashboardNavbar({ toggleSidebar }) {
   const avatar = localStorage.getItem("avatar");
   const email = localStorage.getItem("email") || "user@email.com";
 
-  // 🔥 Close dropdown when clicking outside
+  //  Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -42,7 +42,7 @@ function DashboardNavbar({ toggleSidebar }) {
           </svg>
         </button>
 
-        {/* 🔥 MOBILE LOGO */}
+        {/*  MOBILE LOGO */}
         <span className="navbar-logo-mobile">Ziplo</span>
       </div>
 
@@ -60,7 +60,7 @@ function DashboardNavbar({ toggleSidebar }) {
           )}
         </div>
 
-        {/* 🔽 DROPDOWN */}
+        {/*  DROPDOWN */}
         {open && (
           <div className="profile-dropdown">
 

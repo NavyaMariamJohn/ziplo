@@ -14,7 +14,7 @@ import {
   CartesianGrid
 } from "recharts";
 
-/* 🔥 CHART (User Signups) */
+/*  CHART (User Signups) */
 function AdminChart({ data }) {
   return (
     <ResponsiveContainer width="100%" height={260}>
@@ -91,7 +91,7 @@ function AdminDashboard() {
     load();
   }, []);
 
-  /* 🔥 STATS (Now using absolute totals from stats API) */
+  /*  STATS (Now using absolute totals from stats API) */
   const totalUsers = stats ? stats.total_users : 0;
   const totalLinks = urls.length;
   const totalClicks = urls.reduce(
@@ -147,7 +147,7 @@ function AdminDashboard() {
   activities.sort((a, b) => b.timestamp - a.timestamp);
   const recentActivities = activities.slice(0, 5);
 
-  /* 🔥 TOP USERS BY LINKS */
+  /*  TOP USERS BY LINKS */
   // Group by username/created_by
   const userStats = {};
   urls.forEach(u => {

@@ -28,7 +28,7 @@ function DashboardLayout({ children }) {
   return (
     <div className={`dashboard-layout ${isMobile ? "mobile" : "desktop"} ${isSidebarOpen ? "sidebar-open" : "sidebar-collapsed"}`}>
       
-      {/* 🔥 MOBILE OVERLAY */}
+      {/*  MOBILE OVERLAY */}
       {isMobile && isSidebarOpen && (
         <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
       )}
